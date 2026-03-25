@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DigiStore.az – Rəqəmsal Məhsullar</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0a0f;
+  --bg2: #111118;
+  --bg3: #1a1a24;
+  --card: #16161f;
+  --border: #2a2a38;
+  --accent: #6c63ff;
+  --accent2: #ff6584;
+  --accent3: #43e97b;
+  --text: #f0f0f8;
+  --muted: #888899;
+  --radius: 14px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; overflow-x: hidden; }
+
+/* SCROLLBAR */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 3px; }
+
+/* ======= NAVBAR ======= */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 40px; height: 65px;
+  background: rgba(10,10,15,0.85); backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+}
+.nav-logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.5rem; color: var(--text); text-decoration: none; display: flex; align-items: center; gap: 8px; }
+.nav-logo span { color: var(--accent); }
+.nav-links { display: flex; gap: 8px; list-style: none; }
+.nav-links a { color: var(--muted); text-decoration: none; font-size: 0.9rem; padding: 6px 14px; border-radius: 8px; transition: all .2s; }
+.nav-links a:hover { color: var(--text); background: var(--bg3); }
+.nav-right { display: flex; align-items: center; gap: 12px; }
+.search-bar { position: relative; }
+.search-bar input {
+  background: var(--bg3); border: 1px solid var(--border); border-radius: 10px;
+  padding: 8px 14px 8px 36px; color: var(--text); font-size: 0.85rem; width: 200px;
+  outline: none; transition: all .2s; font-family: inherit;
+}
+.search-bar input:focus { border-color: var(--accent); width: 240px; }
+.search-bar input::placeholder { color: var(--muted); }
+.search-icon { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 0.9rem; pointer-events: none; }
+.btn { padding: 8px 20px; border-radius: 10px; font-size: 0.85rem; font-weight: 600; cursor: pointer; border: none; font-family: inherit; transition: all .2s; }
+.btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text); }
+.btn-outline:hover { border-color: var(--accent); color: var(--accent); }
+.btn-primary { background: var(--accent); color: #fff; }
+.btn-primary:hover { background: #5a53e0; transform: translateY(-1px); }
+.balance-chip { background: var(--bg3); border: 1px solid var(--border); border-radius: 10px; padding: 6px 14px; font-size: 0.85rem; display: flex; align-items: center; gap: 6px; cursor: pointer; transition: all .2s; }
+.balance-chip:hover { border-color: var(--accent3); color: var(--accent3); }
+.balance-chip .bal-icon { color: var(--accent3); }
+.cart-btn { background: var(--bg3); border: 1px solid var(--border); border-radius: 10px; padding: 7px 12px; cursor: pointer; transition: all .2s; font-size: 1rem; position: relative; }
+.cart-btn:hover { border-color: var(--accent); }
+.cart-count { position: absolute; top: -6px; right: -6px; background: var(--accent2); color: #fff; border-radius: 50%; width: 18px; height: 18px; font-size: 0.7rem; font-weight: 700; display: flex; align-items: center; justify-content: center; display: none; }
+.cart-count.show { display: flex; }
+
+/* ======= HERO ======= */
+.hero {
+  padding: 140px 40px 80px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+  width: 700px; height: 400px;
+  background: radial-gradient(ellipse at center, rgba(108,99,255,.18) 0%, transparent 70%);
+  pointer-events: none;
+}
+.hero-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(108,99,255,.12); border: 1px solid rgba(108,99,255,.3); border-radius: 50px; padding: 6px 16px; font-size: 0.8rem; color: #a89eff; margin-bottom: 24px; }
+.hero h1 { font-family: 'Syne', sans-serif; font-size: clamp(2.2rem, 5vw, 4rem); font-weight: 800; line-height: 1.1; margin-bottom: 16px; }
+.hero h1 .hl { color: var(--accent); }
+.hero p { color: var(--muted); font-size: 1.1rem; max-width: 500px; margin: 0 auto 32px; line-height: 1.7; }
+.hero-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+.btn-lg { padding: 13px 30px; font-size: 1rem; border-radius: 12px; }
+.hero-stats { display: flex; gap: 40px; justify-content: center; margin-top: 60px; flex-wrap: wrap; }
+.stat { text-align: center; }
+.stat-num { font-family: 'Syne', sans-serif; font-size: 2rem; font-weight: 800; color: var(--text); }
+.stat-label { font-size: 0.8rem; color: var(--muted); margin-top: 2px; }
+
+/* ======= SECTIONS ======= */
+.section { padding: 60px 40px; max-width: 1280px; margin: 0 auto; }
+.section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 32px; }
+.section-title { font-family: 'Syne', sans-serif; font-size: 1.6rem; font-weight: 700; }
+.section-title span { color: var(--accent); }
+.view-all { color: var(--accent); font-size: 0.85rem; text-decoration: none; display: flex; align-items: center; gap: 4px; transition: gap .2s; }
+.view-all:hover { gap: 8px; }
+
+/* ======= CATEGORIES ======= */
+.cats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+.cat-card {
+  background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 28px 20px; text-align: center; cursor: pointer; transition: all .3s;
+  text-decoration: none; color: var(--text); display: flex; flex-direction: column; align-items: center; gap: 12px;
+  position: relative; overflow: hidden;
+}
+.cat-card::before {
+  content: ''; position: absolute; inset: 0; opacity: 0; transition: opacity .3s;
+  background: radial-gradient(ellipse at center, var(--cat-color, rgba(108,99,255,.1)), transparent 70%);
+}
+.cat-card:hover { border-color: var(--cat-color, var(--accent)); transform: translateY(-4px); }
+.cat-card:hover::before { opacity: 1; }
+.cat-icon { font-size: 2.2rem; }
+.cat-name { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1rem; }
+.cat-desc { font-size: 0.78rem; color: var(--muted); }
+.cat-count { background: var(--bg3); border-radius: 20px; padding: 3px 10px; font-size: 0.75rem; color: var(--muted); }
+
+/* ======= PRODUCTS ======= */
+.products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 16px; }
+.product-card {
+  background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
+  overflow: hidden; cursor: pointer; transition: all .3s; position: relative;
+}
+.product-card:hover { transform: translateY(-4px); border-color: var(--accent); box-shadow: 0 8px 30px rgba(108,99,255,.15); }
+.product-img { width: 100%; height: 140px; object-fit: cover; background: var(--bg3); display: flex; align-items: center; justify-content: center; font-size: 3rem; }
+.product-body { padding: 14px; }
+.product-cat { font-size: 0.7rem; color: var(--accent); font-weight: 600; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 6px; }
+.product-name { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.95rem; margin-bottom: 8px; line-height: 1.3; }
+.product-price { color: var(--accent3); font-weight: 700; font-size: 1.05rem; margin-bottom: 12px; }
+.product-price .old-price { color: var(--muted); font-weight: 400; font-size: 0.8rem; text-decoration: line-through; margin-left: 6px; }
+.product-footer { display: flex; gap: 8px; }
+.btn-buy { flex: 1; background: var(--accent); color: #fff; border: none; border-radius: 8px; padding: 8px; font-size: 0.82rem; font-weight: 600; cursor: pointer; font-family: inherit; transition: all .2s; }
+.btn-buy:hover { background: #5a53e0; }
+.btn-cart { background: var(--bg3); border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px; cursor: pointer; transition: all .2s; font-size: 0.9rem; }
+.btn-cart:hover { border-color: var(--accent); }
+.badge { position: absolute; top: 10px; right: 10px; background: var(--accent2); color: #fff; border-radius: 6px; padding: 3px 8px; font-size: 0.7rem; font-weight: 700; }
+.badge.new { background: var(--accent3); color: #000; }
+
+/* ======= WHY US ======= */
+.why-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+.why-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 28px; transition: all .3s; }
+.why-card:hover { border-color: var(--accent); transform: translateY(-3px); }
+.why-icon { font-size: 2rem; margin-bottom: 14px; }
+.why-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.05rem; margin-bottom: 8px; }
+.why-desc { color: var(--muted); font-size: 0.87rem; line-height: 1.6; }
+
+/* ======= FAQ ======= */
+.faq-list { display: flex; flex-direction: column; gap: 10px; max-width: 800px; margin: 0 auto; }
+.faq-item { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+.faq-q { padding: 18px 20px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; font-weight: 600; transition: color .2s; }
+.faq-q:hover { color: var(--accent); }
+.faq-icon { color: var(--muted); transition: transform .3s; font-size: 1.1rem; }
+.faq-item.open .faq-icon { transform: rotate(45deg); color: var(--accent); }
+.faq-a { max-height: 0; overflow: hidden; transition: max-height .3s ease; padding: 0 20px; color: var(--muted); font-size: 0.9rem; line-height: 1.7; }
+.faq-item.open .faq-a { max-height: 200px; padding: 0 20px 18px; }
+
+/* ======= ABOUT ======= */
+.about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; }
+.about-text h2 { font-family: 'Syne', sans-serif; font-size: 2rem; font-weight: 800; margin-bottom: 16px; }
+.about-text p { color: var(--muted); line-height: 1.8; margin-bottom: 20px; }
+.about-img { background: var(--bg3); border: 1px solid var(--border); border-radius: 20px; height: 300px; display: flex; align-items: center; justify-content: center; font-size: 6rem; position: relative; overflow: hidden; }
+.about-img::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at center, rgba(108,99,255,.2), transparent 70%); }
+
+/* ======= CONTACT ======= */
+.contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
+.contact-info { display: flex; flex-direction: column; gap: 20px; }
+.contact-item { display: flex; gap: 16px; align-items: flex-start; }
+.contact-icon { width: 44px; height: 44px; background: rgba(108,99,255,.12); border: 1px solid rgba(108,99,255,.2); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0; }
+.contact-label { font-size: 0.78rem; color: var(--muted); margin-bottom: 2px; }
+.contact-val { font-weight: 600; font-size: 0.95rem; }
+.contact-form { display: flex; flex-direction: column; gap: 14px; }
+.input-group label { font-size: 0.82rem; color: var(--muted); margin-bottom: 6px; display: block; }
+.input-group input, .input-group textarea {
+  width: 100%; background: var(--bg3); border: 1px solid var(--border); border-radius: 10px;
+  padding: 12px 14px; color: var(--text); font-family: inherit; font-size: 0.9rem; outline: none; transition: border .2s; resize: none;
+}
+.input-group input:focus, .input-group textarea:focus { border-color: var(--accent); }
+
+/* ======= FOOTER ======= */
+footer { background: var(--bg2); border-top: 1px solid var(--border); padding: 40px; margin-top: 60px; }
+.footer-inner { max-width: 1280px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; }
+.footer-copy { color: var(--muted); font-size: 0.85rem; }
+.footer-links { display: flex; gap: 20px; }
+.footer-links a { color: var(--muted); text-decoration: none; font-size: 0.85rem; transition: color .2s; }
+.footer-links a:hover { color: var(--text); }
+
+/* ======= MODALS ======= */
+.overlay { position: fixed; inset: 0; background: rgba(0,0,0,.7); backdrop-filter: blur(6px); z-index: 2000; display: flex; align-items: center; justify-content: center; padding: 20px; opacity: 0; pointer-events: none; transition: opacity .3s; }
+.overlay.show { opacity: 1; pointer-events: all; }
+.modal { background: var(--bg2); border: 1px solid var(--border); border-radius: 20px; padding: 36px; width: 100%; max-width: 420px; position: relative; transform: scale(.95); transition: transform .3s; }
+.overlay.show .modal { transform: scale(1); }
+.modal-close { position: absolute; top: 16px; right: 16px; background: var(--bg3); border: 1px solid var(--border); border-radius: 8px; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1rem; color: var(--muted); transition: all .2s; }
+.modal-close:hover { border-color: var(--accent2); color: var(--accent2); }
+.modal-title { font-family: 'Syne', sans-serif; font-size: 1.5rem; font-weight: 800; margin-bottom: 6px; }
+.modal-sub { color: var(--muted); font-size: 0.87rem; margin-bottom: 28px; }
+.modal-tabs { display: flex; background: var(--bg3); border-radius: 10px; padding: 4px; margin-bottom: 24px; }
+.modal-tab { flex: 1; padding: 8px; text-align: center; border-radius: 8px; cursor: pointer; font-size: 0.87rem; font-weight: 600; color: var(--muted); transition: all .2s; }
+.modal-tab.active { background: var(--accent); color: #fff; }
+.modal-form { display: flex; flex-direction: column; gap: 14px; }
+.modal-form .input-group input { background: var(--bg3); }
+.or-divider { display: flex; align-items: center; gap: 12px; color: var(--muted); font-size: 0.8rem; }
+.or-divider::before, .or-divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+.modal-footer { text-align: center; margin-top: 16px; font-size: 0.83rem; color: var(--muted); }
+.modal-footer a { color: var(--accent); text-decoration: none; }
+
+/* ======= CART PANEL ======= */
+.cart-panel { position: fixed; right: 0; top: 0; bottom: 0; width: 380px; background: var(--bg2); border-left: 1px solid var(--border); z-index: 1500; transform: translateX(100%); transition: transform .3s; display: flex; flex-direction: column; }
+.cart-panel.open { transform: translateX(0); }
+.cart-header { padding: 24px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+.cart-header h3 { font-family: 'Syne', sans-serif; font-weight: 700; }
+.cart-items { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+.cart-item { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 12px; display: flex; gap: 12px; align-items: center; }
+.cart-item-icon { font-size: 2rem; width: 50px; text-align: center; }
+.cart-item-info { flex: 1; }
+.cart-item-name { font-weight: 600; font-size: 0.9rem; margin-bottom: 2px; }
+.cart-item-price { color: var(--accent3); font-weight: 700; font-size: 0.85rem; }
+.cart-item-remove { color: var(--muted); cursor: pointer; transition: color .2s; font-size: 1rem; }
+.cart-item-remove:hover { color: var(--accent2); }
+.cart-footer { padding: 20px; border-top: 1px solid var(--border); }
+.cart-total { display: flex; justify-content: space-between; margin-bottom: 16px; font-weight: 700; }
+.cart-total-price { color: var(--accent3); font-size: 1.2rem; }
+.empty-cart { text-align: center; color: var(--muted); padding: 60px 20px; }
+.empty-cart .empty-icon { font-size: 3rem; margin-bottom: 12px; }
+
+/* ======= BALANCE MODAL ======= */
+.bal-methods { display: flex; gap: 10px; margin-bottom: 20px; }
+.bal-method { flex: 1; padding: 14px; background: var(--bg3); border: 2px solid var(--border); border-radius: 10px; text-align: center; cursor: pointer; transition: all .2s; }
+.bal-method.active { border-color: var(--accent); background: rgba(108,99,255,.1); }
+.bal-method .bm-icon { font-size: 1.5rem; margin-bottom: 4px; }
+.bal-method .bm-name { font-size: 0.8rem; font-weight: 600; }
+.upload-area { border: 2px dashed var(--border); border-radius: 10px; padding: 30px; text-align: center; cursor: pointer; transition: all .2s; color: var(--muted); font-size: 0.88rem; margin-top: 12px; }
+.upload-area:hover { border-color: var(--accent); color: var(--text); }
+.upload-area input { display: none; }
+.upload-area .upload-icon { font-size: 2rem; margin-bottom: 8px; }
+
+/* ======= PRODUCT MODAL ======= */
+.product-modal { max-width: 520px; }
+.pm-header { display: flex; gap: 20px; margin-bottom: 20px; align-items: center; }
+.pm-img { width: 80px; height: 80px; background: var(--bg3); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; }
+.pm-info h3 { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.2rem; margin-bottom: 4px; }
+.pm-price { color: var(--accent3); font-weight: 700; font-size: 1.4rem; }
+.pm-qty { display: flex; align-items: center; gap: 12px; margin: 16px 0; }
+.qty-btn { width: 34px; height: 34px; background: var(--bg3); border: 1px solid var(--border); border-radius: 8px; cursor: pointer; font-size: 1.1rem; display: flex; align-items: center; justify-content: center; transition: all .2s; }
+.qty-btn:hover { border-color: var(--accent); color: var(--accent); }
+.qty-val { font-weight: 700; font-size: 1.1rem; min-width: 30px; text-align: center; }
+
+/* ======= TOAST ======= */
+.toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 12px 22px; font-size: 0.9rem; z-index: 9999; opacity: 0; transition: all .3s; pointer-events: none; white-space: nowrap; }
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.toast.success { border-color: var(--accent3); color: var(--accent3); }
+.toast.error { border-color: var(--accent2); color: var(--accent2); }
+
+/* ======= FILTER TABS ======= */
+.filter-tabs { display: flex; gap: 8px; margin-bottom: 24px; flex-wrap: wrap; }
+.filter-tab { padding: 7px 18px; border-radius: 50px; border: 1px solid var(--border); background: var(--card); color: var(--muted); font-size: 0.83rem; font-weight: 600; cursor: pointer; transition: all .2s; }
+.filter-tab.active, .filter-tab:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+/* ======= RESPONSIVE ======= */
+@media (max-width: 900px) {
+  nav { padding: 0 20px; }
+  .nav-links { display: none; }
+  .hero { padding: 110px 20px 60px; }
+  .section { padding: 40px 20px; }
+  .cats-grid { grid-template-columns: repeat(2, 1fr); }
+  .why-grid { grid-template-columns: 1fr 1fr; }
+  .about-grid, .contact-grid { grid-template-columns: 1fr; }
+  .search-bar input { width: 150px; }
+}
+@media (max-width: 500px) {
+  .cats-grid { grid-template-columns: repeat(2, 1fr); }
+  .why-grid { grid-template-columns: 1fr; }
+  .hero-stats { gap: 24px; }
+  .cart-panel { width: 100%; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav>
+  <a href="#" class="nav-logo">Digi<span>Store</span>.az</a>
+  <ul class="nav-links">
+    <li><a href="#categories">Kateqoriyalar</a></li>
+    <li><a href="#products">Məhsullar</a></li>
+    <li><a href="#about">Haqqımızda</a></li>
+    <li><a href="#contact">Əlaqə</a></li>
+  </ul>
+  <div class="nav-right">
+    <div class="search-bar">
+      <span class="search-icon">🔍</span>
+      <input type="text" placeholder="Axtar..." id="searchInput" oninput="handleSearch()">
+    </div>
+    <div class="balance-chip" id="balanceChip" onclick="openBalModal()" style="display:none">
+      <span class="bal-icon">💰</span>
+      <span id="balanceDisplay">0.00 ₼</span>
+    </div>
+    <button class="cart-btn" onclick="toggleCart()">🛒 <span class="cart-count" id="cartCount">0</span></button>
+    <button class="btn btn-outline" onclick="openAuth('login')" id="loginBtn">Giriş</button>
+    <button class="btn btn-primary" onclick="openAuth('register')" id="registerBtn">Qeydiyyat</button>
+    <div id="userChip" style="display:none;align-items:center;gap:8px;">
+      <div style="background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:6px 14px;font-size:0.85rem;cursor:pointer;" onclick="logout()" title="Çıxış et">
+        <span id="userNameDisplay"></span> · Çıxış
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-badge">⚡ Azərbaycanın Rəqəmsal Mağazası</div>
+  <h1>Rəqəmsal Məhsullar<br><span class="hl">Anında Çatdırılır</span></h1>
+  <p>Steam oyunları, oyun pulları, panel xidmətləri və abunəliklər – hamısı bir yerdə, ən yaxşı qiymətlərlə.</p>
+  <div class="hero-btns">
+    <button class="btn btn-primary btn-lg" onclick="document.getElementById('products').scrollIntoView({behavior:'smooth'})">Alış-verişə Başla</button>
+    <button class="btn btn-outline btn-lg" onclick="document.getElementById('about').scrollIntoView({behavior:'smooth'})">Daha Çox</button>
+  </div>
+  <div class="hero-stats">
+    <div class="stat"><div class="stat-num">2500+</div><div class="stat-label">Məhsul</div></div>
+    <div class="stat"><div class="stat-num">15K+</div><div class="stat-label">Müştəri</div></div>
+    <div class="stat"><div class="stat-num">99%</div><div class="stat-label">Məmnuniyət</div></div>
+    <div class="stat"><div class="stat-num">7/24</div><div class="stat-label">Dəstək</div></div>
+  </div>
+</section>
+
+<!-- CATEGORIES -->
+<div class="section" id="categories">
+  <div class="section-header">
+    <div class="section-title">Kateqoriyalar <span>·</span></div>
+  </div>
+  <div class="cats-grid">
+    <a class="cat-card" href="#" onclick="filterCat('steam')" style="--cat-color:rgba(26,159,255,.3)">
+      <div class="cat-icon">🎮</div>
+      <div class="cat-name">Steam</div>
+      <div class="cat-desc">Steam oyunları & hədiyyə kartları</div>
+      <div class="cat-count">48 məhsul</div>
+    </a>
+    <a class="cat-card" href="#" onclick="filterCat('oyunpulu')" style="--cat-color:rgba(255,101,132,.3)">
+      <div class="cat-icon">💎</div>
+      <div class="cat-name">Oyun Pulları</div>
+      <div class="cat-desc">UC, Elmas, Gem və daha çox</div>
+      <div class="cat-count">32 məhsul</div>
+    </a>
+    <a class="cat-card" href="#" onclick="filterCat('panel')" style="--cat-color:rgba(67,233,123,.3)">
+      <div class="cat-icon">📱</div>
+      <div class="cat-name">Panel</div>
+      <div class="cat-desc">Sosial media artırma xidmətləri</div>
+      <div class="cat-count">56 məhsul</div>
+    </a>
+    <a class="cat-card" href="#" onclick="filterCat('diger')" style="--cat-color:rgba(255,165,0,.3)">
+      <div class="cat-icon">🌟</div>
+      <div class="cat-name">Digər</div>
+      <div class="cat-desc">Netflix, Canva, CapCut abunəlikləri</div>
+      <div class="cat-count">24 məhsul</div>
+    </a>
+  </div>
+</div>
+
+<!-- PRODUCTS -->
+<div class="section" id="products">
+  <div class="section-header">
+    <div class="section-title">Məhsullar <span>·</span></div>
+  </div>
+  <div class="filter-tabs" id="filterTabs">
+    <div class="filter-tab active" onclick="filterCat('all')">Hamısı</div>
+    <div class="filter-tab" onclick="filterCat('steam')">🎮 Steam</div>
+    <div class="filter-tab" onclick="filterCat('oyunpulu')">💎 Oyun Pulları</div>
+    <div class="filter-tab" onclick="filterCat('panel')">📱 Panel</div>
+    <div class="filter-tab" onclick="filterCat('diger')">🌟 Digər</div>
+  </div>
+  <div class="products-grid" id="productsGrid"></div>
+</div>
+
+<!-- WHY US -->
+<div class="section" id="why">
+  <div class="section-header">
+    <div class="section-title">Niyə <span>Biz?</span></div>
+  </div>
+  <div class="why-grid">
+    <div class="why-card">
+      <div class="why-icon">⚡</div>
+      <div class="why-title">Ani Çatdırılma</div>
+      <div class="why-desc">Ödəniş tamamlandıqdan sonra məhsulunuz dərhal hesabınıza təsdiqlənir. Gözləmə yoxdur.</div>
+    </div>
+    <div class="why-card">
+      <div class="why-icon">🔒</div>
+      <div class="why-title">Təhlükəsiz Ödəniş</div>
+      <div class="why-desc">M10 və bank kartı ilə etibarlı ödəniş. Bütün əməliyyatlar şifrəlidir.</div>
+    </div>
+    <div class="why-card">
+      <div class="why-icon">💰</div>
+      <div class="why-title">Ən Yaxşı Qiymətlər</div>
+      <div class="why-desc">Bazardakı ən rəqabətli qiymətlər. Tez-tez endirimlər və xüsusi kuponlar.</div>
+    </div>
+    <div class="why-card">
+      <div class="why-icon">🎯</div>
+      <div class="why-title">Geniş Çeşid</div>
+      <div class="why-desc">Steam-dən sosial media panellərinə, oyun pullarından abunəliklərə qədər hər şey.</div>
+    </div>
+    <div class="why-card">
+      <div class="why-icon">🤝</div>
+      <div class="why-title">7/24 Dəstək</div>
+      <div class="why-desc">Hər hansı problem yarandıqda dəstək komandamız sizinlə əlaqə saxlayır.</div>
+    </div>
+    <div class="why-card">
+      <div class="why-icon">🏆</div>
+      <div class="why-title">15.000+ Müştəri</div>
+      <div class="why-desc">Minlərlə məmnun müştərimiz bizi tövsiyə edir. Etibarlılıq bizim əsas dəyərimizdir.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<div class="section" id="about">
+  <div class="about-grid">
+    <div class="about-text">
+      <h2>Biz Kimik?</h2>
+      <p>DigiStore.az – 2021-ci ildən fəaliyyət göstərən Azərbaycanın aparıcı rəqəmsal məhsul platformasıdır. Steam oyunları, oyun daxili valyutalar, sosial media artırma xidmətləri və premium abunəliklər sahəsində geniş çeşidimizlə sizi xidmətinizdəyik.</p>
+      <p>Missiyamız: hər azərbaycanlı oyunçu və texnologiya istifadəçisinə ən sərfəli qiymətlərlə ən keyfiyyətli rəqəmsal məhsulları çatdırmaq.</p>
+      <button class="btn btn-primary" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">Bizimlə Əlaqə</button>
+    </div>
+    <div class="about-img">🎮</div>
+  </div>
+</div>
+
+<!-- FAQ -->
+<div class="section" id="faq">
+  <div class="section-header">
+    <div class="section-title">Tez-Tez Verilən <span>Suallar</span></div>
+  </div>
+  <div class="faq-list">
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">
+        Necə ödəniş edə bilərəm?
+        <span class="faq-icon">+</span>
+      </div>
+      <div class="faq-a">M10 elektron cüzdanı və ya bank kartı ilə ödəniş edə bilərsiniz. Balans artırma bölməsindən seçiminizi edin, çeki yükləyin, admin təsdiqindən sonra balansınıza keçər.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">
+        Məhsulu nə vaxt alacağam?
+        <span class="faq-icon">+</span>
+      </div>
+      <div class="faq-a">Balansınız dolduqdan sonra məhsulunuzu dərhal ala bilərsiniz. Steam hesab məlumatları və digər məhsullar anında hesabınıza gəlir.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">
+        Kupon kodunu necə istifadə edirəm?
+        <span class="faq-icon">+</span>
+      </div>
+      <div class="faq-a">Sepet səhifəsindəki "Kupon Kodu" sahəsinə kodunuzu daxil edin. Endirim avtomatik tətbiq olunacaq.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">
+        Balansımı geri ala bilərəm?
+        <span class="faq-icon">+</span>
+      </div>
+      <div class="faq-a">Balans əlavə edildikdən sonra geri qaytarılmır. Lakin məhsul almadan əvvəl hər hansı problem yaranarsa, dəstək komandamızla əlaqə saxlayın.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">
+        Hesabım bloklanıbsa nə etməliyəm?
+        <span class="faq-icon">+</span>
+      </div>
+      <div class="faq-a">Bizimlə Telegram, Instagram və ya email vasitəsilə əlaqə saxlayın. 24 saat ərzində probleminizi həll edirik.</div>
+    </div>
+  </div>
+</div>
+
+<!-- CONTACT -->
+<div class="section" id="contact">
+  <div class="section-header">
+    <div class="section-title">Bizimlə <span>Əlaqə</span></div>
+  </div>
+  <div class="contact-grid">
+    <div class="contact-info">
+      <div class="contact-item">
+        <div class="contact-icon">📱</div>
+        <div>
+          <div class="contact-label">Telegram</div>
+          <div class="contact-val">@DigiStoreAZ</div>
+        </div>
+      </div>
+      <div class="contact-item">
+        <div class="contact-icon">📸</div>
+        <div>
+          <div class="contact-label">Instagram</div>
+          <div class="contact-val">@digistore.az</div>
+        </div>
+      </div>
+      <div class="contact-item">
+        <div class="contact-icon">📧</div>
+        <div>
+          <div class="contact-label">Email</div>
+          <div class="contact-val">info@digistore.az</div>
+        </div>
+      </div>
+      <div class="contact-item">
+        <div class="contact-icon">🕐</div>
+        <div>
+          <div class="contact-label">İş saatları</div>
+          <div class="contact-val">Hər gün 09:00 – 23:00</div>
+        </div>
+      </div>
+    </div>
+    <div class="contact-form">
+      <div class="input-group"><label>Ad Soyad</label><input type="text" placeholder="Adınızı daxil edin"></div>
+      <div class="input-group"><label>Email</label><input type="email" placeholder="email@example.com"></div>
+      <div class="input-group"><label>Mesaj</label><textarea rows="4" placeholder="Mesajınızı yazın..."></textarea></div>
+      <button class="btn btn-primary" style="padding:12px;font-size:0.95rem;">Göndər</button>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-copy">© 2024 DigiStore.az – Bütün hüquqlar qorunur.</div>
+    <div class="footer-links">
+      <a href="#">Gizlilik Siyasəti</a>
+      <a href="#">Qaydalar</a>
+      <a href="#contact">Əlaqə</a>
+    </div>
+  </div>
+</footer>
+
+<!-- AUTH MODAL -->
+<div class="overlay" id="authOverlay" onclick="closeAuthOnBg(event)">
+  <div class="modal">
+    <div class="modal-close" onclick="closeAuth()">×</div>
+    <div class="modal-title" id="authTitle">Xoş Gəldiniz</div>
+    <div class="modal-sub" id="authSub">Davam etmək üçün daxil olun</div>
+    <div class="modal-tabs">
+      <div class="modal-tab active" id="tabLogin" onclick="switchTab('login')">Giriş</div>
+      <div class="modal-tab" id="tabRegister" onclick="switchTab('register')">Qeydiyyat</div>
+    </div>
+    <div id="loginForm" class="modal-form">
+      <div class="input-group"><label>Email</label><input type="email" id="loginEmail" placeholder="email@example.com"></div>
+      <div class="input-group"><label>Şifrə</label><input type="password" id="loginPass" placeholder="••••••••"></div>
+      <button class="btn btn-primary" style="padding:12px;font-size:0.95rem;" onclick="doLogin()">Daxil Ol</button>
+    </div>
+    <div id="registerForm" class="modal-form" style="display:none">
+      <div class="input-group"><label>Ad Soyad</label><input type="text" id="regName" placeholder="Adınız"></div>
+      <div class="input-group"><label>Email</label><input type="email" id="regEmail" placeholder="email@example.com"></div>
+      <div class="input-group"><label>Şifrə</label><input type="password" id="regPass" placeholder="••••••••"></div>
+      <div class="input-group"><label>Şifrəni Təsdiqlə</label><input type="password" id="regPass2" placeholder="••••••••"></div>
+      <button class="btn btn-primary" style="padding:12px;font-size:0.95rem;" onclick="doRegister()">Qeydiyyatdan Keç</button>
+    </div>
+  </div>
+</div>
+
+<!-- BALANCE MODAL -->
+<div class="overlay" id="balOverlay" onclick="closeBalOnBg(event)">
+  <div class="modal">
+    <div class="modal-close" onclick="closeBal()">×</div>
+    <div class="modal-title">Balans Artır</div>
+    <div class="modal-sub">Ödəniş üsulunu seçin, çeki yükləyin</div>
+    <div class="bal-methods">
+      <div class="bal-method active" id="bmM10" onclick="selectPayMethod('m10')">
+        <div class="bm-icon">📱</div>
+        <div class="bm-name">M10</div>
+      </div>
+      <div class="bal-method" id="bmCard" onclick="selectPayMethod('card')">
+        <div class="bm-icon">💳</div>
+        <div class="bm-name">Bank Kartı</div>
+      </div>
+    </div>
+    <div id="m10Info" style="background:var(--bg3);border-radius:10px;padding:14px;margin-bottom:14px;font-size:0.87rem;line-height:1.7;">
+      <b>M10 Nömrəsi:</b> +994 50 000 00 00<br>
+      <b>Ad:</b> DigiStore AZ<br>
+      <span style="color:var(--muted)">Ödənişi etdikdən sonra çeki aşağıda yükləyin.</span>
+    </div>
+    <div id="cardInfo" style="display:none;background:var(--bg3);border-radius:10px;padding:14px;margin-bottom:14px;font-size:0.87rem;line-height:1.7;">
+      <b>Kart Nömrəsi:</b> 4169 7388 0000 0000<br>
+      <b>Ad:</b> DigiStore AZ<br>
+      <span style="color:var(--muted)">Köçürmə etdikdən sonra çeki aşağıda yükləyin.</span>
+    </div>
+    <div class="input-group"><label>Məbləğ (AZN)</label><input type="number" id="balAmount" placeholder="10.00" min="1"></div>
+    <div class="upload-area" onclick="document.getElementById('receiptFile').click()">
+      <input type="file" id="receiptFile" accept="image/*" onchange="handleReceiptUpload(event)">
+      <div class="upload-icon">📎</div>
+      <div id="uploadText">Çeki yükləmək üçün klikləyin</div>
+    </div>
+    <button class="btn btn-primary" style="width:100%;padding:12px;margin-top:14px;font-size:0.95rem;" onclick="submitBalanceRequest()">Göndər – Admin Təsdiqini Gözlə</button>
+  </div>
+</div>
+
+<!-- CART PANEL -->
+<div class="cart-panel" id="cartPanel">
+  <div class="cart-header">
+    <h3>🛒 Səbət</h3>
+    <button class="btn btn-outline" style="padding:6px 14px;font-size:0.82rem;" onclick="toggleCart()">Bağla</button>
+  </div>
+  <div class="cart-items" id="cartItems"></div>
+  <div class="cart-footer">
+    <div class="input-group" style="margin-bottom:12px;">
+      <label>Kupon Kodu</label>
+      <div style="display:flex;gap:8px;">
+        <input type="text" id="couponInput" placeholder="Kupon daxil et">
+        <button class="btn btn-outline" style="padding:8px 14px;white-space:nowrap;" onclick="applyCoupon()">Tətbiq Et</button>
+      </div>
+    </div>
+    <div class="cart-total"><span>Cəmi:</span><span class="cart-total-price" id="cartTotalPrice">0.00 ₼</span></div>
+    <button class="btn btn-primary" style="width:100%;padding:12px;font-size:0.95rem;" onclick="checkout()">Ödə</button>
+  </div>
+</div>
+
+<!-- PRODUCT MODAL -->
+<div class="overlay" id="productOverlay" onclick="closeProdOnBg(event)">
+  <div class="modal product-modal">
+    <div class="modal-close" onclick="closeProd()">×</div>
+    <div class="pm-header">
+      <div class="pm-img" id="pmImg">🎮</div>
+      <div class="pm-info">
+        <h3 id="pmName">Məhsul</h3>
+        <div class="pm-price" id="pmPrice">0.00 ₼</div>
+        <div style="color:var(--muted);font-size:0.8rem;margin-top:4px;" id="pmCat"></div>
+      </div>
+    </div>
+    <div style="color:var(--muted);font-size:0.88rem;line-height:1.7;margin-bottom:16px;" id="pmDesc"></div>
+    <div class="pm-qty">
+      <span style="font-size:0.85rem;color:var(--muted);">Miqdar:</span>
+      <button class="qty-btn" onclick="changeQty(-1)">−</button>
+      <span class="qty-val" id="qtyVal">1</span>
+      <button class="qty-btn" onclick="changeQty(1)">+</button>
+    </div>
+    <div style="display:flex;gap:10px;">
+      <button class="btn btn-primary" style="flex:1;padding:12px;font-size:0.95rem;" onclick="buyNow()">İndi Al</button>
+      <button class="btn btn-outline" style="flex:1;padding:12px;font-size:0.95rem;" onclick="addCurrentToCart()">Səbətə At</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ===== DATA =====
+let products = [
+  // STEAM
+  { id:1, name:'GTA V Premium', cat:'steam', icon:'🚗', price:22.99, desc:'Grand Theft Auto V Premium Edition – Steam açarı. Bütün DLC-lər daxildir.', badge:'', stock:true },
+  { id:2, name:'Red Dead Redemption 2', cat:'steam', icon:'🤠', price:34.99, oldPrice:49.99, desc:'Rockstar-ın epik açıq dünya oyunu. Steam açarı.', badge:'-30%', stock:true },
+  { id:3, name:'Elden Ring', cat:'steam', icon:'⚔️', price:29.99, desc:'FromSoftware-in möhtəşəm RPG oyunu. Steam açarı.', badge:'', stock:true },
+  { id:4, name:'Cyberpunk 2077', cat:'steam', icon:'🤖', price:19.99, oldPrice:29.99, desc:'CD Projekt RED-in futuristik RPG-si. Steam açarı.', badge:'-33%', stock:true },
+  { id:5, name:'Steam 20 AZN Kart', cat:'steam', icon:'💳', price:22.00, desc:'20 AZN dəyərində Steam hədiyyə kartı.', badge:'', stock:true },
+  { id:6, name:'Steam 50 AZN Kart', cat:'steam', icon:'💳', price:55.00, desc:'50 AZN dəyərində Steam hədiyyə kartı.', badge:'', stock:true },
+  // OYUN PULLARI
+  { id:7, name:'PUBG 60 UC', cat:'oyunpulu', icon:'🎯', price:1.99, desc:'PUBG Mobile 60 Unknown Cash.', badge:'', stock:true },
+  { id:8, name:'PUBG 325 UC', cat:'oyunpulu', icon:'🎯', price:8.99, desc:'PUBG Mobile 325 Unknown Cash.', badge:'Populyar', stock:true },
+  { id:9, name:'PUBG 660 UC', cat:'oyunpulu', icon:'🎯', price:16.99, desc:'PUBG Mobile 660 Unknown Cash.', badge:'', stock:true },
+  { id:10, name:'Free Fire 100 Elmas', cat:'oyunpulu', icon:'💎', price:1.49, desc:'Free Fire 100 Elmas.', badge:'', stock:true },
+  { id:11, name:'Free Fire 520 Elmas', cat:'oyunpulu', icon:'💎', price:6.99, desc:'Free Fire 520 Elmas.', badge:'', stock:true },
+  { id:12, name:'Brawl Stars 80 Gem', cat:'oyunpulu', icon:'💎', price:2.49, desc:'Brawl Stars 80 Gem.', badge:'', stock:true },
+  { id:13, name:'Brawl Stars 170 Gem', cat:'oyunpulu', icon:'💎', price:4.99, desc:'Brawl Stars 170 Gem.', badge:'', stock:true },
+  { id:14, name:'Mobile Legends 86 Elmas', cat:'oyunpulu', icon:'⚡', price:2.29, desc:'Mobile Legends 86 Diamonds.', badge:'', stock:true },
+  // PANEL
+  { id:15, name:'TikTok 1000 İzləyici', cat:'panel', icon:'📱', price:3.99, desc:'TikTok hesabınıza 1000 real izləyici. 24-48 saat ərzində çatır.', badge:'', stock:true },
+  { id:16, name:'TikTok 5000 İzləyici', cat:'panel', icon:'📱', price:14.99, oldPrice:19.99, desc:'TikTok hesabınıza 5000 real izləyici.', badge:'-25%', stock:true },
+  { id:17, name:'TikTok 10K İzlənmə', cat:'panel', icon:'👁️', price:1.99, desc:'TikTok videolarınıza 10.000 izlənmə.', badge:'', stock:true },
+  { id:18, name:'Instagram 1000 İzləyici', cat:'panel', icon:'📸', price:4.99, desc:'Instagram hesabınıza 1000 real izləyici.', badge:'', stock:true },
+  { id:19, name:'Instagram 5000 İzləyici', cat:'panel', icon:'📸', price:18.99, desc:'Instagram hesabınıza 5000 real izləyici.', badge:'', stock:true },
+  { id:20, name:'Instagram 1000 Bəyənmə', cat:'panel', icon:'❤️', price:1.49, desc:'Instagram postunuza 1000 bəyənmə.', badge:'', stock:true },
+  { id:21, name:'YouTube 500 Abunə', cat:'panel', icon:'▶️', price:9.99, desc:'YouTube kanalınıza 500 abunəçi.', badge:'', stock:true },
+  // DİGƏR
+  { id:22, name:'Netflix 1 Aylıq', cat:'diger', icon:'🎬', price:12.99, desc:'Netflix Premium hesab – 1 aylıq abunəlik.', badge:'Çox Satılan', stock:true },
+  { id:23, name:'Netflix 3 Aylıq', cat:'diger', icon:'🎬', price:34.99, oldPrice:38.97, desc:'Netflix Premium hesab – 3 aylıq abunəlik.', badge:'-10%', stock:true },
+  { id:24, name:'Canva Pro 1 Ay', cat:'diger', icon:'🎨', price:9.99, desc:'Canva Pro üzvlük – 1 aylıq.', badge:'', stock:true },
+  { id:25, name:'Canva Pro 3 Ay', cat:'diger', icon:'🎨', price:24.99, desc:'Canva Pro üzvlük – 3 aylıq.', badge:'', stock:true },
+  { id:26, name:'CapCut Pro 1 Ay', cat:'diger', icon:'🎥', price:7.99, desc:'CapCut Pro abunəlik – 1 aylıq.', badge:'Yeni', stock:true },
+  { id:27, name:'Spotify Premium 1 Ay', cat:'diger', icon:'🎵', price:6.99, desc:'Spotify Premium – 1 aylıq reklamsız musiqi.', badge:'', stock:true },
+];
+
+let users = JSON.parse(localStorage.getItem('ds_users') || '[]');
+let currentUser = JSON.parse(localStorage.getItem('ds_current') || 'null');
+let cart = JSON.parse(localStorage.getItem('ds_cart') || '[]');
+let currentFilter = 'all';
+let currentProd = null;
+let currentQty = 1;
+let discountPct = 0;
+let activePayMethod = 'm10';
+// Load admin-set products if any
+const adminProds = JSON.parse(localStorage.getItem('ds_products') || 'null');
+if (adminProds) products = adminProds;
+
+// ===== INIT =====
+window.onload = () => {
+  renderProducts();
+  updateCartUI();
+  updateUserUI();
+};
+
+// ===== PRODUCTS =====
+function renderProducts(list) {
+  const grid = document.getElementById('productsGrid');
+  let data = list || (currentFilter === 'all' ? products : products.filter(p => p.cat === currentFilter));
+  if (!data.length) { grid.innerHTML = '<div style="color:var(--muted);padding:40px;text-align:center;grid-column:1/-1;">Məhsul tapılmadı.</div>'; return; }
+  grid.innerHTML = data.map(p => `
+    <div class="product-card" onclick="openProd(${p.id})">
+      ${p.badge ? `<div class="badge ${p.badge==='Yeni'?'new':''}">${p.badge}</div>` : ''}
+      <div class="product-img">${p.icon}</div>
+      <div class="product-body">
+        <div class="product-cat">${catLabel(p.cat)}</div>
+        <div class="product-name">${p.name}</div>
+        <div class="product-price">${p.price.toFixed(2)} ₼ ${p.oldPrice ? `<span class="old-price">${p.oldPrice.toFixed(2)} ₼</span>` : ''}</div>
+        <div class="product-footer">
+          <button class="btn-buy" onclick="event.stopPropagation();quickAddToCart(${p.id})">Səbətə At</button>
+          <button class="btn-cart" onclick="event.stopPropagation();openProd(${p.id})" title="Detallar">👁</button>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function catLabel(c) {
+  return {steam:'Steam',oyunpulu:'Oyun Pulları',panel:'Panel',diger:'Digər'}[c]||c;
+}
+
+function filterCat(cat) {
+  event && event.preventDefault && event.preventDefault();
+  currentFilter = cat;
+  document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+  const tabs = document.querySelectorAll('.filter-tab');
+  const idx = {all:0,steam:1,oyunpulu:2,panel:3,diger:4}[cat];
+  if (idx !== undefined) tabs[idx]?.classList.add('active');
+  renderProducts();
+  document.getElementById('products').scrollIntoView({behavior:'smooth'});
+}
+
+function handleSearch() {
+  const q = document.getElementById('searchInput').value.toLowerCase().trim();
+  if (!q) { renderProducts(); return; }
+  renderProducts(products.filter(p => p.name.toLowerCase().includes(q) || catLabel(p.cat).toLowerCase().includes(q)));
+}
+
+// ===== PRODUCT MODAL =====
+function openProd(id) {
+  const p = products.find(x => x.id === id);
+  if (!p) return;
+  currentProd = p; currentQty = 1;
+  document.getElementById('pmImg').textContent = p.icon;
+  document.getElementById('pmName').textContent = p.name;
+  document.getElementById('pmPrice').textContent = p.price.toFixed(2) + ' ₼';
+  document.getElementById('pmCat').textContent = catLabel(p.cat);
+  document.getElementById('pmDesc').textContent = p.desc || '';
+  document.getElementById('qtyVal').textContent = 1;
+  document.getElementById('productOverlay').classList.add('show');
+}
+function closeProd() { document.getElementById('productOverlay').classList.remove('show'); }
+function closeProdOnBg(e) { if (e.target.id==='productOverlay') closeProd(); }
+function changeQty(d) {
+  currentQty = Math.max(1, currentQty + d);
+  document.getElementById('qtyVal').textContent = currentQty;
+}
+function buyNow() {
+  if (!currentUser) { closeProd(); openAuth('login'); showToast('Zəhmət olmasa daxil olun','error'); return; }
+  const bal = currentUser.balance || 0;
+  const total = currentProd.price * currentQty;
+  if (bal < total) { showToast('Balansınız kifayət deyil','error'); return; }
+  currentUser.balance = +(bal - total).toFixed(2);
+  saveUser();
+  closeProd();
+  showToast(`✅ ${currentProd.name} alındı! Cəmi: ${total.toFixed(2)} ₼`,'success');
+  updateUserUI();
+}
+function addCurrentToCart() {
+  if (!currentProd) return;
+  for (let i=0;i<currentQty;i++) addToCart(currentProd.id);
+  closeProd();
+}
+
+// ===== CART =====
+function addToCart(id) {
+  const p = products.find(x => x.id === id);
+  if (!p) return;
+  const ex = cart.find(c => c.id === id);
+  if (ex) ex.qty = (ex.qty||1) + 1;
+  else cart.push({...p, qty:1});
+  saveCart(); updateCartUI();
+  showToast(`🛒 ${p.name} əlavə edildi`,'success');
+}
+function quickAddToCart(id) { addToCart(id); }
+function removeFromCart(id) {
+  cart = cart.filter(c => c.id !== id);
+  saveCart(); updateCartUI();
+}
+function saveCart() { localStorage.setItem('ds_cart', JSON.stringify(cart)); }
+function updateCartUI() {
+  const cnt = cart.reduce((a,c) => a+(c.qty||1), 0);
+  const el = document.getElementById('cartCount');
+  el.textContent = cnt; el.classList.toggle('show', cnt > 0);
+  const items = document.getElementById('cartItems');
+  if (!cart.length) { items.innerHTML='<div class="empty-cart"><div class="empty-icon">🛒</div><div>Səbət boşdur</div></div>'; }
+  else items.innerHTML = cart.map(c=>`
+    <div class="cart-item">
+      <div class="cart-item-icon">${c.icon}</div>
+      <div class="cart-item-info">
+        <div class="cart-item-name">${c.name}</div>
+        <div class="cart-item-price">${(c.price*(c.qty||1)).toFixed(2)} ₼ ${c.qty>1?`(${c.qty}x)`:''}  </div>
+      </div>
+      <span class="cart-item-remove" onclick="removeFromCart(${c.id})">🗑</span>
+    </div>`).join('');
+  let total = cart.reduce((a,c) => a + c.price*(c.qty||1), 0);
+  if (discountPct > 0) total = total * (1 - discountPct/100);
+  document.getElementById('cartTotalPrice').textContent = total.toFixed(2) + ' ₼';
+}
+function toggleCart() { document.getElementById('cartPanel').classList.toggle('open'); }
+function applyCoupon() {
+  const code = document.getElementById('couponInput').value.trim().toUpperCase();
+  const coupons = JSON.parse(localStorage.getItem('ds_coupons') || '{}');
+  if (coupons[code]) {
+    discountPct = coupons[code];
+    showToast(`🎉 ${discountPct}% endirim tətbiq edildi`, 'success');
+  } else { showToast('Kupon tapılmadı', 'error'); discountPct = 0; }
+  updateCartUI();
+}
+function checkout() {
+  if (!currentUser) { showToast('Zəhmət olmasa daxil olun', 'error'); return; }
+  if (!cart.length) { showToast('Səbət boşdur', 'error'); return; }
+  let total = cart.reduce((a,c) => a + c.price*(c.qty||1), 0);
+  if (discountPct > 0) total = total * (1 - discountPct/100);
+  const bal = currentUser.balance || 0;
+  if (bal < total) { showToast('Balansınız kifayət deyil', 'error'); return; }
+  currentUser.balance = +(bal - total).toFixed(2);
+  saveUser();
+  cart = []; discountPct = 0;
+  saveCart(); updateCartUI(); updateUserUI();
+  showToast(`✅ Ödəniş uğurludur! ${total.toFixed(2)} ₼ çıxıldı`, 'success');
+  toggleCart();
+}
+
+// ===== AUTH =====
+function openAuth(tab) {
+  document.getElementById('authOverlay').classList.add('show');
+  switchTab(tab);
+}
+function closeAuth() { document.getElementById('authOverlay').classList.remove('show'); }
+function closeAuthOnBg(e) { if (e.target.id==='authOverlay') closeAuth(); }
+function switchTab(t) {
+  document.getElementById('loginForm').style.display = t==='login'?'flex':'none';
+  document.getElementById('registerForm').style.display = t==='register'?'flex':'none';
+  document.getElementById('tabLogin').classList.toggle('active', t==='login');
+  document.getElementById('tabRegister').classList.toggle('active', t==='register');
+}
+function doLogin() {
+  const email = document.getElementById('loginEmail').value.trim();
+  const pass = document.getElementById('loginPass').value;
+  if (!email||!pass) { showToast('Bütün sahələri doldurun','error'); return; }
+  const u = users.find(x => x.email===email && x.password===pass);
+  if (!u) { showToast('Email və ya şifrə yanlışdır','error'); return; }
+  currentUser = u;
+  localStorage.setItem('ds_current', JSON.stringify(u));
+  closeAuth(); updateUserUI();
+  showToast(`Xoş gəldiniz, ${u.name}!`, 'success');
+}
+function doRegister() {
+  const name = document.getElementById('regName').value.trim();
+  const email = document.getElementById('regEmail').value.trim();
+  const pass = document.getElementById('regPass').value;
+  const pass2 = document.getElementById('regPass2').value;
+  if (!name||!email||!pass) { showToast('Bütün sahələri doldurun','error'); return; }
+  if (pass !== pass2) { showToast('Şifrələr uyğun gəlmir','error'); return; }
+  if (users.find(x => x.email===email)) { showToast('Bu email artıq qeydiyyatdadır','error'); return; }
+  const u = { id: Date.now(), name, email, password: pass, balance: 0, role: 'user', createdAt: new Date().toLocaleDateString() };
+  users.push(u); localStorage.setItem('ds_users', JSON.stringify(users));
+  currentUser = u; localStorage.setItem('ds_current', JSON.stringify(u));
+  closeAuth(); updateUserUI();
+  showToast(`Qeydiyyat uğurludur! Xoş gəldiniz, ${name}!`, 'success');
+}
+function logout() {
+  currentUser = null; localStorage.removeItem('ds_current');
+  updateUserUI(); showToast('Çıxış edildi');
+}
+function updateUserUI() {
+  const logged = !!currentUser;
+  document.getElementById('loginBtn').style.display = logged ? 'none' : '';
+  document.getElementById('registerBtn').style.display = logged ? 'none' : '';
+  document.getElementById('userChip').style.display = logged ? 'flex' : 'none';
+  document.getElementById('balanceChip').style.display = logged ? 'flex' : 'none';
+  if (logged) {
+    document.getElementById('userNameDisplay').textContent = currentUser.name;
+    document.getElementById('balanceDisplay').textContent = (currentUser.balance||0).toFixed(2) + ' ₼';
+  }
+}
+function saveUser() {
+  localStorage.setItem('ds_current', JSON.stringify(currentUser));
+  const idx = users.findIndex(u => u.id === currentUser.id);
+  if (idx >= 0) { users[idx] = currentUser; localStorage.setItem('ds_users', JSON.stringify(users)); }
+}
+
+// ===== BALANCE =====
+function openBalModal() {
+  if (!currentUser) { openAuth('login'); return; }
+  document.getElementById('balOverlay').classList.add('show');
+}
+function closeBal() { document.getElementById('balOverlay').classList.remove('show'); }
+function closeBalOnBg(e) { if (e.target.id==='balOverlay') closeBal(); }
+function selectPayMethod(m) {
+  activePayMethod = m;
+  document.getElementById('bmM10').classList.toggle('active', m==='m10');
+  document.getElementById('bmCard').classList.toggle('active', m==='card');
+  document.getElementById('m10Info').style.display = m==='m10'?'block':'none';
+  document.getElementById('cardInfo').style.display = m==='card'?'block':'none';
+}
+function handleReceiptUpload(e) {
+  const f = e.target.files[0];
+  if (f) document.getElementById('uploadText').textContent = '✅ ' + f.name + ' yükləndi';
+}
+function submitBalanceRequest() {
+  if (!currentUser) { showToast('Daxil olun', 'error'); return; }
+  const amt = parseFloat(document.getElementById('balAmount').value);
+  if (!amt || amt < 1) { showToast('Məbləği daxil edin', 'error'); return; }
+  const requests = JSON.parse(localStorage.getItem('ds_bal_requests') || '[]');
+  requests.push({ id: Date.now(), userId: currentUser.id, userName: currentUser.name, amount: amt, method: activePayMethod, status: 'pending', date: new Date().toLocaleDateString() });
+  localStorage.setItem('ds_bal_requests', JSON.stringify(requests));
+  closeBal();
+  showToast('✅ Sorğunuz göndərildi. Admin təsdiqindən sonra balansınıza gələcək.', 'success');
+}
+
+// ===== FAQ =====
+function toggleFaq(el) {
+  const item = el.parentElement;
+  const isOpen = item.classList.contains('open');
+  document.querySelectorAll('.faq-item').forEach(f => f.classList.remove('open'));
+  if (!isOpen) item.classList.add('open');
+}
+
+// ===== TOAST =====
+function showToast(msg, type='') {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'toast show ' + type;
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+</script>
+</body>
+</html>
