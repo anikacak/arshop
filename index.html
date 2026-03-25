@@ -249,7 +249,7 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:26px 16p
     <div class="bal-chip" id="balChip" onclick="openBal()" style="display:none">💰 <span id="balDisplay">0.00 ₼</span></div>
     <button class="cart-btn" onclick="toggleCart()">🛒<span class="c-cnt" id="cCnt">0</span></button>
     <button class="btn btn-o hm" onclick="openAuth('login')" id="loginBtn">Giriş</button>
-    <button class="btn btn-p reg-btn-desktop" onclick="openAuth('register')" id="regBtn" style="display:none">Qeydiyyat</button>
+    <button class="btn btn-p reg-btn-desktop" onclick="openAuth('register')" id="regBtn">Qeydiyyat</button>
     <div id="userChip" style="display:none">
       <div style="background:var(--bg3);border:1px solid var(--border);border-radius:9px;padding:6px 11px;font-size:0.8rem;cursor:pointer;white-space:nowrap;" onclick="doLogout()"><span id="uName"></span> · Çıxış</div>
     </div>
@@ -465,9 +465,45 @@ function getCoupons(){return DB.coupons||{};}
 
 async function loadDB(){
   const cached=localStorage.getItem('ds_db');
-  if(cached){try{DB=JSON.parse(cached);products=DB.products||[];return;}catch(e){}}
+  if(cached){try{DB=JSON.parse(cached);products=DB.products||[];if(products.length)return;}catch(e){}}
+  // data.json-dan yüklə
   try{const r=await fetch('data.json');if(r.ok){DB=await r.json();products=DB.products||[];saveDB();return;}}catch(e){}
-  DB={products:[],users:[],balanceRequests:[],coupons:{},accounts:[],settings:{}};products=[];saveDB();
+  // Əgər fetch işləməsə (local file mode), default məhsulları yüklə
+  DB={
+    products:[
+      {id:1,name:"GTA V Premium",cat:"steam",icon:"🚗",price:22.99,oldPrice:null,desc:"Grand Theft Auto V Premium Edition – Steam açarı. Bütün DLC-lər daxildir.",badge:"",stock:true},
+      {id:2,name:"Red Dead Redemption 2",cat:"steam",icon:"🤠",price:34.99,oldPrice:49.99,desc:"Rockstar-ın epik açıq dünya oyunu. Steam açarı.",badge:"-30%",stock:true},
+      {id:3,name:"Elden Ring",cat:"steam",icon:"⚔️",price:29.99,oldPrice:null,desc:"FromSoftware-in möhtəşəm RPG oyunu. Steam açarı.",badge:"",stock:true},
+      {id:4,name:"Cyberpunk 2077",cat:"steam",icon:"🤖",price:19.99,oldPrice:29.99,desc:"CD Projekt RED-in futuristik RPG-si. Steam açarı.",badge:"-33%",stock:true},
+      {id:5,name:"Steam 20 AZN Kart",cat:"steam",icon:"💳",price:22.00,oldPrice:null,desc:"20 AZN dəyərində Steam hədiyyə kartı.",badge:"",stock:true},
+      {id:6,name:"Steam 50 AZN Kart",cat:"steam",icon:"💳",price:55.00,oldPrice:null,desc:"50 AZN dəyərində Steam hədiyyə kartı.",badge:"",stock:true},
+      {id:7,name:"PUBG 60 UC",cat:"oyunpulu",icon:"🎯",price:1.99,oldPrice:null,desc:"PUBG Mobile 60 Unknown Cash.",badge:"",stock:true},
+      {id:8,name:"PUBG 325 UC",cat:"oyunpulu",icon:"🎯",price:8.99,oldPrice:null,desc:"PUBG Mobile 325 Unknown Cash.",badge:"Populyar",stock:true},
+      {id:9,name:"PUBG 660 UC",cat:"oyunpulu",icon:"🎯",price:16.99,oldPrice:null,desc:"PUBG Mobile 660 Unknown Cash.",badge:"",stock:true},
+      {id:10,name:"Free Fire 100 Elmas",cat:"oyunpulu",icon:"💎",price:1.49,oldPrice:null,desc:"Free Fire 100 Elmas.",badge:"",stock:true},
+      {id:11,name:"Free Fire 520 Elmas",cat:"oyunpulu",icon:"💎",price:6.99,oldPrice:null,desc:"Free Fire 520 Elmas.",badge:"",stock:true},
+      {id:12,name:"Brawl Stars 80 Gem",cat:"oyunpulu",icon:"💎",price:2.49,oldPrice:null,desc:"Brawl Stars 80 Gem.",badge:"",stock:true},
+      {id:13,name:"Brawl Stars 170 Gem",cat:"oyunpulu",icon:"💎",price:4.99,oldPrice:null,desc:"Brawl Stars 170 Gem.",badge:"",stock:true},
+      {id:14,name:"Mobile Legends 86 Elmas",cat:"oyunpulu",icon:"⚡",price:2.29,oldPrice:null,desc:"Mobile Legends 86 Diamonds.",badge:"",stock:true},
+      {id:15,name:"TikTok 1000 İzləyici",cat:"panel",icon:"📱",price:3.99,oldPrice:null,desc:"TikTok hesabınıza 1000 real izləyici. 24-48 saat ərzində çatır.",badge:"",stock:true},
+      {id:16,name:"TikTok 5000 İzləyici",cat:"panel",icon:"📱",price:14.99,oldPrice:19.99,desc:"TikTok hesabınıza 5000 real izləyici.",badge:"-25%",stock:true},
+      {id:17,name:"TikTok 10K İzlənmə",cat:"panel",icon:"👁️",price:1.99,oldPrice:null,desc:"TikTok videolarınıza 10.000 izlənmə.",badge:"",stock:true},
+      {id:18,name:"Instagram 1000 İzləyici",cat:"panel",icon:"📸",price:4.99,oldPrice:null,desc:"Instagram hesabınıza 1000 real izləyici.",badge:"",stock:true},
+      {id:19,name:"Instagram 5000 İzləyici",cat:"panel",icon:"📸",price:18.99,oldPrice:null,desc:"Instagram hesabınıza 5000 real izləyici.",badge:"",stock:true},
+      {id:20,name:"Instagram 1000 Bəyənmə",cat:"panel",icon:"❤️",price:1.49,oldPrice:null,desc:"Instagram postunuza 1000 bəyənmə.",badge:"",stock:true},
+      {id:21,name:"YouTube 500 Abunə",cat:"panel",icon:"▶️",price:9.99,oldPrice:null,desc:"YouTube kanalınıza 500 abunəçi.",badge:"",stock:true},
+      {id:22,name:"Netflix 1 Aylıq",cat:"diger",icon:"🎬",price:12.99,oldPrice:null,desc:"Netflix Premium hesab – 1 aylıq abunəlik.",badge:"Çox Satılan",stock:true},
+      {id:23,name:"Netflix 3 Aylıq",cat:"diger",icon:"🎬",price:34.99,oldPrice:38.97,desc:"Netflix Premium hesab – 3 aylıq abunəlik.",badge:"-10%",stock:true},
+      {id:24,name:"Canva Pro 1 Ay",cat:"diger",icon:"🎨",price:9.99,oldPrice:null,desc:"Canva Pro üzvlük – 1 aylıq.",badge:"",stock:true},
+      {id:25,name:"Canva Pro 3 Ay",cat:"diger",icon:"🎨",price:24.99,oldPrice:null,desc:"Canva Pro üzvlük – 3 aylıq.",badge:"",stock:true},
+      {id:26,name:"CapCut Pro 1 Ay",cat:"diger",icon:"🎥",price:7.99,oldPrice:null,desc:"CapCut Pro abunəlik – 1 aylıq.",badge:"Yeni",stock:true},
+      {id:27,name:"Spotify Premium 1 Ay",cat:"diger",icon:"🎵",price:6.99,oldPrice:null,desc:"Spotify Premium – 1 aylıq reklamsız musiqi.",badge:"",stock:true}
+    ],
+    users:[],balanceRequests:[],coupons:{},accounts:[],
+    settings:{m10Number:'+994 50 000 00 00',cardNumber:'4169 7388 0000 0000',adminEmail:'admin@digistore.az',adminPass:'admin123'}
+  };
+  products=DB.products;
+  saveDB();
 }
 
 // ═══════════ INIT ═══════════
@@ -646,8 +682,8 @@ function updateUserUI(){
   const rb=document.getElementById('regBtn');if(rb)rb.style.display=ok?'none':'';
   document.getElementById('userChip').style.display=ok?'flex':'none';
   document.getElementById('balChip').style.display=ok?'flex':'none';
-  const ml=document.getElementById('mobLogin');if(ml)ml.style.display=ok?'none':'';
-  const mr=document.getElementById('mobReg');if(mr)mr.style.display=ok?'none':'';
+  const ml=document.getElementById('mobLogin');if(ml)ml.style.display=ok?'none':'flex';
+  const mr=document.getElementById('mobReg');if(mr)mr.style.display=ok?'none':'flex';
   if(ok){document.getElementById('uName').textContent=currentUser.name;document.getElementById('balDisplay').textContent=(currentUser.balance||0).toFixed(2)+' ₼';}
 }
 function saveUserState(){
@@ -683,4 +719,4 @@ function toggleFaq(el){
   if(!open)item.classList.add('open');
 }
 
-// ═══════════ TOAST ═══�
+// ═══════════ TOAST ═══�
