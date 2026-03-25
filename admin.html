@@ -336,22 +336,6 @@ tr:hover td{background:rgba(108,99,255,.03);}
 <div class="toast" id="toast"></div>
 
 <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
-// ═══════════ AUTH ═══════════
-let isLogged=sessionStorage.getItem('adm')==='1';
-function adminLogin(){
-  const e=document.getElementById('aEmail').value.trim();
-  const p=document.getElementById('aPass').value;
-  const s=getSettings();
-  if(e===s.adminEmail&&p===s.adminPass){
-    sessionStorage.setItem('adm','1');isLogged=true;
-    document.getElementById('loginPg').style.display='none';
-    initAdmin();
-  }else toast('Yanlış məlumatlar','error');
-}
-function adminLogout(){sessionStorage.removeItem('adm');location.reload();}
-if(isLogged){document.getElementById('loginPg').style.display='none';window.addEventListener('DOMContentLoaded',initAdmin);}
-else document.addEventListener('keydown',e=>{if(e.key==='Enter')adminLogin();});
-
 // ═══════════ DATA ═══════════
 let DB=null;
 function loadDB(){
@@ -373,6 +357,26 @@ function getAccounts(){return DB.accounts||[];}
 function saveAccounts(a){DB.accounts=a;saveDB();}
 function getSettings(){return DB.settings||{adminEmail:'admin@digistore.az',adminPass:'admin123'};}
 function catLbl(c){return{steam:'Steam',oyunpulu:'Oyun Pulları',panel:'Panel',diger:'Digər'}[c]||c;}
+
+// ═══════════ AUTH ═══════════
+let isLogged=sessionStorage.getItem('adm')==='1';
+function adminLogin(){
+  if(!DB) loadDB();
+  const e=document.getElementById('aEmail').value.trim();
+  const p=document.getElementById('aPass').value;
+  const s=getSettings();
+  if(e===s.adminEmail&&p===s.adminPass){
+    sessionStorage.setItem('adm','1');isLogged=true;
+    document.getElementById('loginPg').style.display='none';
+    initAdmin();
+  }else{
+    const inp=document.getElementById('aPass');
+    inp.style.borderColor='var(--accent2)';
+    setTimeout(()=>inp.style.borderColor='',1500);
+    toast('Yanlış email və ya şifrə','error');
+  }
+}
+function adminLogout(){sessionStorage.removeItem('adm');location.reload();}
 
 // ═══════════ SIDEBAR ═══════════
 function toggleSb(){
@@ -682,7 +686,11 @@ function toast(msg, type=''){
 }
 
 window.addEventListener('DOMContentLoaded',()=>{
-  if(isLogged) initAdmin();
+  loadDB();
+  if(isLogged){
+    document.getElementById('loginPg').style.display='none';
+    initAdmin();
+  }
 });
 </script>
 </body>
