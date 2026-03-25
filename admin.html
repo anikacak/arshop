@@ -513,15 +513,44 @@ function addManualBal(){
 }
 
 // ═══════════ PRODUCTS ═══════════
+// Şəkli kiçilt və base64 qaytar
+function compressAndSave(file, cb){
+  const img=new Image();
+  const url=URL.createObjectURL(file);
+  img.onload=()=>{
+    const canvas=document.createElement('canvas');
+    const MAX=300;
+    let w=img.width,h=img.height;
+    if(w>h){if(w>MAX){h=Math.round(h*MAX/w);w=MAX;}}
+    else{if(h>MAX){w=Math.round(w*MAX/h);h=MAX;}}
+    canvas.width=w;canvas.height=h;
+    canvas.getContext('2d').drawImage(img,0,0,w,h);
+    URL.revokeObjectURL(url);
+    cb(canvas.toDataURL('image/jpeg',0.7));
+  };
+  img.onerror=()=>{URL.revokeObjectURL(url);cb(null);};
+  img.src=url;
+}
+
 function addProd(){
   const name=document.getElementById('pName').value.trim();
   const price=parseFloat(document.getElementById('pPrice').value);
   if(!name||!price){toast('Ad və qiymət mütləqdir','error');return;}
   const prods=getProds();
   const newId=Math.max(0,...prods.map(p=>p.id))+1;
-  const doSave = (imgData) => {
-    prods.push({id:newId,name,cat:document.getElementById('pCat').value,price,oldPrice:parseFloat(document.getElementById('pOldP').value)||null,icon:document.getElementById('pIcon').value.trim()||'📦',badge:document.getElementById('pBadge').value.trim(),desc:document.getElementById('pDesc').value.trim(),stock:true,img:imgData||null});
-    saveProds(prods);
+  const doSave=(imgData)=>{
+    prods.push({id:newId,name,cat:document.getElementById('pCat').value,price,
+      oldPrice:parseFloat(document.getElementById('pOldP').value)||null,
+      icon:document.getElementById('pIcon').value.trim()||'📦',
+      badge:document.getElementById('pBadge').value.trim(),
+      desc:document.getElementById('pDesc').value.trim(),
+      stock:true,img:imgData||null});
+    try{saveProds(prods);}catch(e){
+      prods[prods.length-1].img=null;
+      saveProds(prods);
+      toast('⚠️ Şəkil çox böyükdür, şəkilsiz saxlanıldı','error');
+      return;
+    }
     ['pName','pPrice','pOldP','pIcon','pBadge','pDesc'].forEach(id=>document.getElementById(id).value='');
     document.getElementById('pImg').value='';
     document.getElementById('pImgPrev').innerHTML='🖼️';
@@ -529,8 +558,10 @@ function addProd(){
   };
   const imgInput=document.getElementById('pImg');
   if(imgInput&&imgInput.files&&imgInput.files[0]){
-    getImgData('pImg').then(doSave);
-  } else doSave(null);
+    compressAndSave(imgInput.files[0],doSave);
+  } else {
+    doSave(null);
+  }
 }
 function renderProdTB(){
   const prods=getProds();const tb=document.getElementById('prodTB');
@@ -565,15 +596,28 @@ function closeEdit(){document.getElementById('editOv').classList.remove('show');
 function saveEdit(){
   const id=parseInt(document.getElementById('ePid').value);
   const prods=getProds();const idx=prods.findIndex(x=>x.id===id);if(idx<0)return;
-  const doSave = (imgData) => {
-    prods[idx]={...prods[idx],name:document.getElementById('ePName').value.trim(),cat:document.getElementById('ePCat').value,price:parseFloat(document.getElementById('ePPrice').value),oldPrice:parseFloat(document.getElementById('ePOldP').value)||null,icon:document.getElementById('ePIcon').value.trim(),badge:document.getElementById('ePBadge').value.trim(),desc:document.getElementById('ePDesc').value.trim()};
+  const doSave=(imgData)=>{
+    prods[idx]={...prods[idx],
+      name:document.getElementById('ePName').value.trim(),
+      cat:document.getElementById('ePCat').value,
+      price:parseFloat(document.getElementById('ePPrice').value),
+      oldPrice:parseFloat(document.getElementById('ePOldP').value)||null,
+      icon:document.getElementById('ePIcon').value.trim(),
+      badge:document.getElementById('ePBadge').value.trim(),
+      desc:document.getElementById('ePDesc').value.trim()};
     if(imgData) prods[idx].img=imgData;
-    saveProds(prods);closeEdit();renderProdTB();renderPriceTB();populateDiscSel();toast('Məhsul yeniləndi','success');
+    try{saveProds(prods);}catch(e){
+      prods[idx].img=null;saveProds(prods);
+      toast('⚠️ Şəkil çox böyükdür, şəkilsiz saxlanıldı','error');return;
+    }
+    closeEdit();renderProdTB();renderPriceTB();populateDiscSel();toast('Məhsul yeniləndi','success');
   };
   const imgInput=document.getElementById('ePImg');
   if(imgInput&&imgInput.files&&imgInput.files[0]){
-    getImgData('ePImg').then(doSave);
-  } else doSave(null);
+    compressAndSave(imgInput.files[0],doSave);
+  } else {
+    doSave(null);
+  }
 }
 function delProd(id){
   if(!confirm('Bu məhsulu silmək istəyirsiniz?'))return;
@@ -667,15 +711,7 @@ function previewImg(input, previewId){
     reader.readAsDataURL(input.files[0]);
   }
 }
-function getImgData(inputId){
-  const input = document.getElementById(inputId);
-  if(!input || !input.files || !input.files[0]) return null;
-  return new Promise(res => {
-    const r = new FileReader();
-    r.onload = e => res(e.target.result);
-    r.readAsDataURL(input.files[0]);
-  });
-}
+// compressAndSave yuxarıda təyin edilib
 
 // ═══════════ TOAST ═══════════
 function toast(msg, type=''){
