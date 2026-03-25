@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DigiStore.az – Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0a0f;--bg2:#111118;--bg3:#1a1a24;--card:#16161f;--border:#2a2a38;--accent:#6c63ff;--accent2:#ff6584;--accent3:#43e97b;--warn:#f59e0b;--text:#f0f0f8;--muted:#888899;--r:11px;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;}
+::-webkit-scrollbar{width:4px;}::-webkit-scrollbar-track{background:var(--bg);}::-webkit-scrollbar-thumb{background:var(--accent);border-radius:3px;}
+
+/* LOGIN */
+#loginPg{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:9999;padding:20px;}
+.login-box{background:var(--bg2);border:1px solid var(--border);border-radius:18px;padding:36px 28px;width:100%;max-width:360px;}
+.login-box h2{font-family:'Syne',sans-serif;font-weight:800;font-size:1.7rem;margin-bottom:4px;}
+.login-box p{color:var(--muted);font-size:0.84rem;margin-bottom:24px;}
+
+/* LAYOUT */
+.layout{display:flex;min-height:100vh;}
+
+/* SIDEBAR */
+.sidebar{width:220px;min-height:100vh;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:200;overflow-y:auto;transition:transform .3s;}
+.sb-logo{padding:20px 16px;border-bottom:1px solid var(--border);font-family:'Syne',sans-serif;font-weight:800;font-size:1.15rem;}
+.sb-logo span{color:var(--accent);}
+.sb-logo small{display:block;font-size:0.68rem;color:var(--muted);font-weight:400;margin-top:1px;}
+.sb-nav{flex:1;padding:12px 10px;display:flex;flex-direction:column;gap:3px;}
+.ni{display:flex;align-items:center;gap:9px;padding:9px 11px;border-radius:9px;cursor:pointer;color:var(--muted);font-size:0.87rem;font-weight:500;transition:all .2s;border:none;background:none;width:100%;text-align:left;font-family:inherit;}
+.ni:hover{background:var(--bg3);color:var(--text);}
+.ni.active{background:rgba(108,99,255,.15);color:var(--accent);}
+.ni .ico{font-size:1rem;width:20px;text-align:center;}
+.nb{margin-left:auto;background:var(--accent2);color:#fff;border-radius:50px;padding:2px 6px;font-size:0.68rem;font-weight:700;}
+.sb-foot{padding:14px 10px;border-top:1px solid var(--border);}
+.adm-chip{display:flex;align-items:center;gap:9px;}
+.adm-av{width:34px;height:34px;background:rgba(108,99,255,.2);border:1px solid rgba(108,99,255,.3);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.9rem;}
+.adm-name{font-size:0.83rem;font-weight:600;}
+.adm-role{font-size:0.7rem;color:var(--accent);}
+
+/* MAIN */
+.main{margin-left:220px;flex:1;display:flex;flex-direction:column;min-height:100vh;transition:margin .3s;}
+.topbar{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 20px;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.topbar-title{font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;}
+.topbar-actions{display:flex;gap:8px;align-items:center;}
+.hbg-btn{display:none;flex-direction:column;gap:4px;cursor:pointer;padding:6px;background:var(--bg3);border:1px solid var(--border);border-radius:7px;}
+.hbg-btn span{width:17px;height:2px;background:var(--text);border-radius:2px;}
+.content{flex:1;padding:20px;}
+
+/* PAGES */
+.page{display:none;}
+.page.active{display:block;}
+
+/* STATS */
+.stats-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:22px;}
+@media(min-width:700px){.stats-grid{grid-template-columns:repeat(4,1fr);}}
+.sc{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px;}
+.sc-label{font-size:0.74rem;color:var(--muted);margin-bottom:7px;}
+.sc-val{font-family:'Syne',sans-serif;font-size:1.7rem;font-weight:800;}
+.sc-ch{font-size:0.72rem;margin-top:3px;}
+.sc-ch.up{color:var(--accent3);}
+
+/* TABLE CARD */
+.tc{background:var(--card);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:20px;}
+.tc-head{padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;}
+.tc-head h3{font-family:'Syne',sans-serif;font-weight:700;font-size:0.95rem;}
+.table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+table{width:100%;border-collapse:collapse;min-width:500px;}
+th{background:var(--bg3);padding:10px 13px;text-align:left;font-size:0.74rem;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.4px;white-space:nowrap;}
+td{padding:11px 13px;border-bottom:1px solid rgba(42,42,56,.5);font-size:0.84rem;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:rgba(108,99,255,.03);}
+.bdg{display:inline-flex;align-items:center;padding:2px 9px;border-radius:50px;font-size:0.72rem;font-weight:600;white-space:nowrap;}
+.bg{background:rgba(67,233,123,.12);color:var(--accent3);}
+.br{background:rgba(255,101,132,.12);color:var(--accent2);}
+.bw{background:rgba(245,158,11,.12);color:var(--warn);}
+.bb{background:rgba(108,99,255,.12);color:var(--accent);}
+.ab{display:flex;gap:5px;flex-wrap:wrap;}
+.ab button{padding:4px 10px;border-radius:6px;font-size:0.75rem;font-weight:600;cursor:pointer;border:none;font-family:inherit;transition:all .2s;white-space:nowrap;}
+.ag{background:rgba(67,233,123,.12);color:var(--accent3);border:1px solid rgba(67,233,123,.2)!important;border:none;}
+.ag:hover{background:rgba(67,233,123,.25);}
+.ar{background:rgba(255,101,132,.12);color:var(--accent2);border:1px solid rgba(255,101,132,.2)!important;border:none;}
+.ar:hover{background:rgba(255,101,132,.25);}
+.ab2{background:rgba(108,99,255,.12);color:var(--accent);}
+.ab2:hover{background:rgba(108,99,255,.25);}
+
+/* FORM */
+.fc{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:20px;margin-bottom:18px;}
+.fc h3{font-family:'Syne',sans-serif;font-weight:700;margin-bottom:16px;font-size:0.94rem;}
+.fg{display:grid;grid-template-columns:1fr;gap:12px;}
+@media(min-width:600px){.fg{grid-template-columns:1fr 1fr;}}
+.ig{margin-bottom:12px;}
+.ig label{font-size:0.78rem;color:var(--muted);margin-bottom:5px;display:block;}
+.ig input,.ig select,.ig textarea{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:9px 12px;color:var(--text);font-family:inherit;font-size:0.86rem;outline:none;transition:border .2s;resize:none;}
+.ig input:focus,.ig select:focus,.ig textarea:focus{border-color:var(--accent);}
+.ig select option{background:var(--bg2);}
+.btn{padding:8px 18px;border-radius:8px;font-size:0.83rem;font-weight:600;cursor:pointer;border:none;font-family:inherit;transition:all .2s;}
+.bp{background:var(--accent);color:#fff;}.bp:hover{background:#5a53e0;}
+.bo{background:transparent;border:1px solid var(--border);color:var(--text);}.bo:hover{border-color:var(--accent);color:var(--accent);}
+.bd{background:rgba(255,101,132,.12);color:var(--accent2);border:1px solid rgba(255,101,132,.2);}.bd:hover{background:rgba(255,101,132,.25);}
+
+/* MODAL */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(8px);z-index:2000;display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s;}
+@media(min-width:580px){.overlay{align-items:center;padding:20px;}}
+.overlay.show{opacity:1;pointer-events:all;}
+.modal{background:var(--bg2);border:1px solid var(--border);border-radius:16px 16px 0 0;padding:22px 18px 26px;width:100%;max-width:100%;position:relative;transform:translateY(30px);transition:transform .3s;max-height:90vh;overflow-y:auto;}
+@media(min-width:580px){.modal{border-radius:14px;max-width:480px;transform:scale(.96);}}
+.overlay.show .modal{transform:translateY(0);}
+@media(min-width:580px){.overlay.show .modal{transform:scale(1);}}
+.dh{width:36px;height:3px;background:var(--border);border-radius:2px;margin:0 auto 16px;}
+@media(min-width:580px){.dh{display:none;}}
+.modal h3{font-family:'Syne',sans-serif;font-weight:700;font-size:1.15rem;margin-bottom:16px;}
+.mc{position:absolute;top:12px;right:12px;background:var(--bg3);border:1px solid var(--border);border-radius:7px;width:28px;height:28px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:0.95rem;color:var(--muted);}
+.mc:hover{color:var(--accent2);border-color:var(--accent2);}
+
+/* TOAST */
+.toast{position:fixed;bottom:16px;left:50%;transform:translateX(-50%) translateY(10px);background:var(--bg2);border:1px solid var(--border);border-radius:11px;padding:10px 18px;font-size:0.84rem;z-index:9999;opacity:0;transition:all .3s;pointer-events:none;white-space:nowrap;max-width:92vw;text-align:center;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.toast.success{border-color:var(--accent3);color:var(--accent3);}
+.toast.error{border-color:var(--accent2);color:var(--accent2);}
+
+/* COUPON ROW */
+.coup-row{display:flex;gap:9px;align-items:flex-end;margin-bottom:12px;flex-wrap:wrap;}
+.coup-row .ig{margin:0;flex:1;min-width:120px;}
+
+/* SIDEBAR OVERLAY (mobile) */
+.sb-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:199;}
+.sb-overlay.show{display:block;}
+
+/* MOBILE RESPONSIVE */
+@media(max-width:767px){
+  .sidebar{transform:translateX(-100%);}
+  .sidebar.open{transform:translateX(0);}
+  .main{margin-left:0;}
+  .hbg-btn{display:flex;}
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginPg">
+  <div class="login-box">
+    <h2>Admin Paneli</h2>
+    <p>DigiStore.az admin panelinə xoş gəldiniz</p>
+    <div class="ig"><label>Email</label><input type="email" id="aEmail" placeholder="admin@digistore.az" autocomplete="username"></div>
+    <div class="ig"><label>Şifrə</label><input type="password" id="aPass" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')adminLogin()"></div>
+    <button class="btn bp" style="width:100%;padding:11px;font-size:0.92rem;margin-top:4px" onclick="adminLogin()">Daxil Ol</button>
+  </div>
+</div>
+
+<!-- SIDEBAR OVERLAY -->
+<div class="sb-overlay" id="sbOv" onclick="closeSb()"></div>
+
+<!-- SIDEBAR -->
+<div class="sidebar" id="sidebar">
+  <div class="sb-logo">Digi<span>Store</span>.az<small>Admin Panel</small></div>
+  <div class="sb-nav">
+    <button class="ni active" onclick="showPage('dashboard',this)"><span class="ico">📊</span> Dashboard</button>
+    <button class="ni" onclick="showPage('users',this)"><span class="ico">👥</span> İstifadəçilər</button>
+    <button class="ni" onclick="showPage('balance',this)"><span class="ico">💰</span> Balans İdarəsi <span class="nb" id="balBdg" style="display:none">0</span></button>
+    <button class="ni" onclick="showPage('products',this)"><span class="ico">📦</span> Məhsullar</button>
+    <button class="ni" onclick="showPage('accounts',this)"><span class="ico">🔑</span> Hesab Məlumatları</button>
+    <button class="ni" onclick="showPage('prices',this)"><span class="ico">🏷️</span> Qiymət İdarəsi</button>
+    <button class="ni" onclick="showPage('discounts',this)"><span class="ico">🎁</span> Endirimlər & Kuponlar</button>
+  </div>
+  <div class="sb-foot">
+    <div class="adm-chip"><div class="adm-av">👤</div><div><div class="adm-name">Admin</div><div class="adm-role">Super Admin</div></div></div>
+    <button class="ni" style="margin-top:8px" onclick="adminLogout()"><span class="ico">🚪</span> Çıxış</button>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main" id="mainArea">
+  <div class="topbar">
+    <div style="display:flex;align-items:center;gap:10px">
+      <div class="hbg-btn" onclick="toggleSb()"><span></span><span></span><span></span></div>
+      <div class="topbar-title" id="pgTitle">Dashboard</div>
+    </div>
+    <div class="topbar-actions">
+      <a href="index.html" target="_blank" class="btn bo" style="text-decoration:none;font-size:0.78rem;padding:6px 12px">🌐 Sayt</a>
+    </div>
+  </div>
+  <div class="content">
+
+    <!-- DASHBOARD -->
+    <div class="page active" id="pg-dashboard">
+      <div class="stats-grid">
+        <div class="sc"><div class="sc-label">👥 İstifadəçi</div><div class="sc-val" id="st0">0</div><div class="sc-ch up">↑ Aktiv</div></div>
+        <div class="sc"><div class="sc-label">⏳ Gözləyən</div><div class="sc-val" id="st1" style="color:var(--warn)">0</div><div class="sc-ch">Balans Sorğusu</div></div>
+        <div class="sc"><div class="sc-label">📦 Məhsul</div><div class="sc-val" id="st2">0</div><div class="sc-ch up">↑ Aktiv</div></div>
+        <div class="sc"><div class="sc-label">🎟️ Kupon</div><div class="sc-val" id="st3">0</div><div class="sc-ch">Aktiv Kupon</div></div>
+      </div>
+      <div class="tc">
+        <div class="tc-head"><h3>Son Balans Sorğuları</h3></div>
+        <div class="table-wrap"><table><thead><tr><th>İstifadəçi</th><th>Məbləğ</th><th>Üsul</th><th>Tarix</th><th>Status</th><th>Əməliyyat</th></tr></thead><tbody id="dashBT"></tbody></table></div>
+      </div>
+    </div>
+
+    <!-- USERS -->
+    <div class="page" id="pg-users">
+      <div class="tc">
+        <div class="tc-head">
+          <h3>İstifadəçilər</h3>
+          <input type="text" placeholder="Axtar..." style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:7px 11px;color:var(--text);font-family:inherit;font-size:0.82rem;outline:none;width:180px" oninput="filterUsers(this.value)">
+        </div>
+        <div class="table-wrap"><table><thead><tr><th>Ad</th><th>Email</th><th>Balans</th><th>Qeydiyyat</th><th>Rol</th><th>Əməliyyat</th></tr></thead><tbody id="usersTB"></tbody></table></div>
+      </div>
+    </div>
+
+    <!-- BALANCE -->
+    <div class="page" id="pg-balance">
+      <div class="tc">
+        <div class="tc-head"><h3>Balans Sorğuları</h3></div>
+        <div class="table-wrap"><table><thead><tr><th>İstifadəçi</th><th>Məbləğ</th><th>Üsul</th><th>Tarix</th><th>Status</th><th>Əməliyyat</th></tr></thead><tbody id="balTB"></tbody></table></div>
+      </div>
+      <div class="fc">
+        <h3>Manual Balans Əlavə Et</h3>
+        <div class="fg">
+          <div class="ig"><label>İstifadəçi Email</label><input type="email" id="mEmail" placeholder="user@example.com"></div>
+          <div class="ig"><label>Məbləğ (AZN)</label><input type="number" id="mAmt" placeholder="10.00"></div>
+        </div>
+        <button class="btn bp" onclick="addManualBal()">Balans Əlavə Et</button>
+      </div>
+    </div>
+
+    <!-- PRODUCTS -->
+    <div class="page" id="pg-products">
+      <div class="fc">
+        <h3>Yeni Məhsul Əlavə Et</h3>
+        <div class="fg">
+          <div class="ig"><label>Məhsul Adı</label><input type="text" id="pName" placeholder="Məhsulun adı"></div>
+          <div class="ig"><label>Kateqoriya</label><select id="pCat"><option value="steam">Steam</option><option value="oyunpulu">Oyun Pulları</option><option value="panel">Panel</option><option value="diger">Digər</option></select></div>
+          <div class="ig"><label>Qiymət (AZN)</label><input type="number" id="pPrice" placeholder="0.00" step="0.01"></div>
+          <div class="ig"><label>Köhnə Qiymət (ixtiyari)</label><input type="number" id="pOldP" placeholder="0.00" step="0.01"></div>
+          <div class="ig"><label>İkon (Emoji)</label><input type="text" id="pIcon" placeholder="🎮" maxlength="4"></div>
+          <div class="ig"><label>Badge</label><input type="text" id="pBadge" placeholder="-30%, Yeni..."></div>
+        </div>
+        <div class="ig"><label>Açıqlama</label><textarea id="pDesc" rows="3" placeholder="Məhsul haqqında..."></textarea></div>
+        <div class="ig">
+          <label>Məhsul Şəkli (ixtiyari)</label>
+          <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+            <label style="display:inline-flex;align-items:center;gap:7px;padding:8px 14px;background:var(--bg3);border:1px dashed var(--border);border-radius:8px;cursor:pointer;font-size:0.83rem;color:var(--muted);transition:border .2s" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
+              📁 Şəkil seç
+              <input type="file" id="pImg" accept="image/*" style="display:none" onchange="previewImg(this,'pImgPrev')">
+            </label>
+            <div id="pImgPrev" style="width:64px;height:64px;border-radius:8px;border:1px solid var(--border);background:var(--bg3);display:flex;align-items:center;justify-content:center;overflow:hidden;font-size:1.4rem">🖼️</div>
+          </div>
+        </div>
+        <button class="btn bp" onclick="addProd()">Məhsul Əlavə Et</button>
+      </div>
+      <div class="tc">
+        <div class="tc-head"><h3>Məhsullar</h3></div>
+        <div class="table-wrap"><table><thead><tr><th>Icon</th><th>Ad</th><th>Kateqoriya</th><th>Qiymət</th><th>Badge</th><th>Əməliyyat</th></tr></thead><tbody id="prodTB"></tbody></table></div>
+      </div>
+    </div>
+
+    <!-- ACCOUNTS -->
+    <div class="page" id="pg-accounts">
+      <div class="fc">
+        <h3>Hesab Məlumatları Yüklə</h3>
+        <div class="fg">
+          <div class="ig"><label>Kateqoriya</label><select id="accCat"><option value="steam">Steam</option><option value="netflix">Netflix</option><option value="canva">Canva</option><option value="spotify">Spotify</option><option value="diger">Digər</option></select></div>
+          <div class="ig"><label>Məhsul Adı</label><input type="text" id="accProd" placeholder="Məhsulun adı"></div>
+        </div>
+        <div class="ig"><label>Hesablar (hər sətir: email:şifrə)</label><textarea id="accData" rows="6" placeholder="user@gmail.com:pass123&#10;user2@gmail.com:pass456"></textarea></div>
+        <button class="btn bp" onclick="saveAccs()">Yüklə</button>
+      </div>
+      <div class="tc">
+        <div class="tc-head"><h3>Yüklənmiş Hesablar</h3></div>
+        <div class="table-wrap"><table><thead><tr><th>Kateqoriya</th><th>Məhsul</th><th>Say</th><th>Tarix</th><th>Əməliyyat</th></tr></thead><tbody id="accTB"></tbody></table></div>
+      </div>
+    </div>
+
+    <!-- PRICES -->
+    <div class="page" id="pg-prices">
+      <div class="tc">
+        <div class="tc-head"><h3>Qiymət İdarəsi</h3></div>
+        <div class="table-wrap"><table><thead><tr><th>Məhsul</th><th>Kateqoriya</th><th>Cari Qiymət</th><th>Yeni Qiymət</th><th>Əməliyyat</th></tr></thead><tbody id="priceTB"></tbody></table></div>
+      </div>
+    </div>
+
+    <!-- DISCOUNTS -->
+    <div class="page" id="pg-discounts">
+      <div class="fc">
+        <h3>Məhsul Endirimi</h3>
+        <div class="fg">
+          <div class="ig"><label>Məhsul</label><select id="discProdSel"><option value="">Məhsul seç...</option></select></div>
+          <div class="ig"><label>Endirim (%)</label><input type="number" id="discPct" placeholder="20" min="1" max="99"></div>
+        </div>
+        <button class="btn bp" onclick="applyDiscount()">Endirim Tətbiq Et</button>
+      </div>
+      <div class="fc">
+        <h3>Kupon Yaratmaq</h3>
+        <div id="couponList" style="margin-bottom:14px"></div>
+        <div class="coup-row">
+          <div class="ig"><label>Kupon Kodu</label><input type="text" id="cCode" placeholder="SUMMER20" style="text-transform:uppercase"></div>
+          <div class="ig"><label>Endirim (%)</label><input type="number" id="cPct" placeholder="%" min="1" max="100"></div>
+          <button class="btn bp" onclick="addCoupon()" style="margin-bottom:12px">Əlavə Et</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- EDIT PRODUCT MODAL -->
+<div class="overlay" id="editOv" onclick="if(event.target.id==='editOv')closeEdit()">
+  <div class="modal">
+    <div class="dh"></div>
+    <div class="mc" onclick="closeEdit()">×</div>
+    <h3>Məhsulu Düzəlt</h3>
+    <input type="hidden" id="ePid">
+    <div class="fg">
+      <div class="ig"><label>Ad</label><input type="text" id="ePName"></div>
+      <div class="ig"><label>Kateqoriya</label><select id="ePCat"><option value="steam">Steam</option><option value="oyunpulu">Oyun Pulları</option><option value="panel">Panel</option><option value="diger">Digər</option></select></div>
+      <div class="ig"><label>Qiymət</label><input type="number" id="ePPrice" step="0.01"></div>
+      <div class="ig"><label>Köhnə Qiymət</label><input type="number" id="ePOldP" step="0.01"></div>
+      <div class="ig"><label>İkon</label><input type="text" id="ePIcon" maxlength="4"></div>
+      <div class="ig"><label>Badge</label><input type="text" id="ePBadge"></div>
+    </div>
+    <div class="ig"><label>Açıqlama</label><textarea id="ePDesc" rows="3"></textarea></div>
+    <div class="ig">
+      <label>Məhsul Şəkli</label>
+      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+        <label style="display:inline-flex;align-items:center;gap:7px;padding:8px 14px;background:var(--bg3);border:1px dashed var(--border);border-radius:8px;cursor:pointer;font-size:0.83rem;color:var(--muted);transition:border .2s" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
+          📁 Şəkil dəyiş
+          <input type="file" id="ePImg" accept="image/*" style="display:none" onchange="previewImg(this,'ePImgPrev')">
+        </label>
+        <div id="ePImgPrev" style="width:64px;height:64px;border-radius:8px;border:1px solid var(--border);background:var(--bg3);display:flex;align-items:center;justify-content:center;overflow:hidden;font-size:1.4rem">🖼️</div>
+      </div>
+    </div>
+    <button class="btn bp" onclick="saveEdit()">Yadda Saxla</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+// ═══════════ AUTH ═══════════
+let isLogged=sessionStorage.getItem('adm')==='1';
+function adminLogin(){
+  const e=document.getElementById('aEmail').value.trim();
+  const p=document.getElementById('aPass').value;
+  const s=getSettings();
+  if(e===s.adminEmail&&p===s.adminPass){
+    sessionStorage.setItem('adm','1');isLogged=true;
+    document.getElementById('loginPg').style.display='none';
+    initAdmin();
+  }else toast('Yanlış məlumatlar','error');
+}
+function adminLogout(){sessionStorage.removeItem('adm');location.reload();}
+if(isLogged){document.getElementById('loginPg').style.display='none';window.addEventListener('DOMContentLoaded',initAdmin);}
+else document.addEventListener('keydown',e=>{if(e.key==='Enter')adminLogin();});
+
+// ═══════════ DATA ═══════════
+let DB=null;
+function loadDB(){
+  const c=localStorage.getItem('ds_db');
+  if(c){try{DB=JSON.parse(c);return;}catch(e){}}
+  DB={products:[],users:[],balanceRequests:[],coupons:{},accounts:[],settings:{adminEmail:'admin@digistore.az',adminPass:'admin123',m10Number:'+994 50 000 00 00',cardNumber:'4169 7388 0000 0000'}};
+  saveDB();
+}
+function saveDB(){localStorage.setItem('ds_db',JSON.stringify(DB));}
+function getProds(){return DB.products||[];}
+function saveProds(p){DB.products=p;saveDB();}
+function getUsers(){return DB.users||[];}
+function saveUsers(u){DB.users=u;saveDB();}
+function getBalReqs(){return DB.balanceRequests||[];}
+function saveBalReqs(r){DB.balanceRequests=r;saveDB();}
+function getCoupons(){return DB.coupons||{};}
+function saveCoupons(c){DB.coupons=c;saveDB();}
+function getAccounts(){return DB.accounts||[];}
+function saveAccounts(a){DB.accounts=a;saveDB();}
+function getSettings(){return DB.settings||{adminEmail:'admin@digistore.az',adminPass:'admin123'};}
+function catLbl(c){return{steam:'Steam',oyunpulu:'Oyun Pulları',panel:'Panel',diger:'Digər'}[c]||c;}
+
+// ═══════════ SIDEBAR ═══════════
+function toggleSb(){
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sbOv').classList.toggle('show');
+}
+function closeSb(){
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sbOv').classList.remove('show');
+}
+
+// ═══════════ INIT ═══════════
+function initAdmin(){
+  loadDB();
+  // If no products, try fetch data.json
+  if(!getProds().length){
+    fetch('data.json').then(r=>r.ok?r.json():null).then(d=>{
+      if(d){
+        if(d.products&&d.products.length)DB.products=d.products;
+        if(d.settings&&Object.keys(d.settings).length)DB.settings={...getSettings(),...d.settings};
+        saveDB();
+      }
+      renderAll();
+    }).catch(()=>renderAll());
+  }else renderAll();
+}
+function renderAll(){
+  updateDash();renderUsersTB();renderBalTB();renderProdTB();renderAccTB();renderPriceTB();renderCoupons();populateDiscSel();updateBadge();
+}
+
+// ═══════════ NAVIGATION ═══════════
+const pgTitles={dashboard:'Dashboard',users:'İstifadəçilər',balance:'Balans İdarəsi',products:'Məhsullar',accounts:'Hesab Məlumatları',prices:'Qiymət İdarəsi',discounts:'Endirimlər & Kuponlar'};
+function showPage(id,btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.ni').forEach(n=>n.classList.remove('active'));
+  document.getElementById('pg-'+id).classList.add('active');
+  if(btn)btn.classList.add('active');
+  document.getElementById('pgTitle').textContent=pgTitles[id]||id;
+  closeSb();
+  if(id==='dashboard')updateDash();
+  if(id==='users')renderUsersTB();
+  if(id==='balance')renderBalTB();
+  if(id==='products')renderProdTB();
+  if(id==='accounts')renderAccTB();
+  if(id==='prices')renderPriceTB();
+  if(id==='discounts'){renderCoupons();populateDiscSel();}
+}
+
+// ═══════════ DASHBOARD ═══════════
+function updateDash(){
+  const users=getUsers(),reqs=getBalReqs(),prods=getProds(),coupons=getCoupons();
+  const pend=reqs.filter(r=>r.status==='pending');
+  document.getElementById('st0').textContent=users.length;
+  document.getElementById('st1').textContent=pend.length;
+  document.getElementById('st2').textContent=prods.length;
+  document.getElementById('st3').textContent=Object.keys(coupons).length;
+  renderBalRows('dashBT',reqs.slice(-8).reverse());
+  updateBadge();
+}
+function updateBadge(){
+  const cnt=getBalReqs().filter(r=>r.status==='pending').length;
+  const el=document.getElementById('balBdg');
+  el.textContent=cnt;el.style.display=cnt?'':'none';
+}
+
+// ═══════════ USERS ═══════════
+function renderUsersTB(filter=''){
+  let users=getUsers();
+  if(filter)users=users.filter(u=>u.name.toLowerCase().includes(filter)||u.email.toLowerCase().includes(filter));
+  const tb=document.getElementById('usersTB');
+  if(!users.length){tb.innerHTML='<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:26px">İstifadəçi yoxdur</td></tr>';return;}
+  tb.innerHTML=users.map(u=>`<tr>
+    <td><b>${u.name}</b></td><td>${u.email}</td>
+    <td style="color:var(--accent3);font-weight:700">${(u.balance||0).toFixed(2)} ₼</td>
+    <td>${u.createdAt||'-'}</td>
+    <td><span class="bdg ${u.role==='admin'?'bb':'bg'}">${u.role==='admin'?'Admin':'User'}</span></td>
+    <td><div class="ab"><button class="bw" onclick="editUserBal(${u.id})">Balans</button><button class="ar" onclick="delUser(${u.id})">Sil</button></div></td>
+  </tr>`).join('');
+}
+function filterUsers(v){renderUsersTB(v.toLowerCase());}
+function editUserBal(id){
+  const amt=prompt('Yeni balans (AZN):');if(amt===null)return;
+  const val=parseFloat(amt);if(isNaN(val)||val<0){toast('Yanlış məbləğ','error');return;}
+  const users=getUsers();const u=users.find(x=>x.id===id);if(!u)return;
+  u.balance=val;saveUsers(users);
+  const cur=JSON.parse(localStorage.getItem('ds_current')||'null');
+  if(cur&&cur.id===id){cur.balance=val;localStorage.setItem('ds_current',JSON.stringify(cur));}
+  renderUsersTB();toast('Balans yeniləndi','success');
+}
+function delUser(id){
+  if(!confirm('Bu istifadəçini silmək istəyirsiniz?'))return;
+  saveUsers(getUsers().filter(u=>u.id!==id));renderUsersTB();toast('İstifadəçi silindi');
+}
+
+// ═══════════ BALANCE ═══════════
+function renderBalRows(tbId,reqs){
+  const tb=document.getElementById(tbId);
+  if(!reqs.length){tb.innerHTML='<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:26px">Sorğu yoxdur</td></tr>';return;}
+  tb.innerHTML=reqs.map(r=>`<tr>
+    <td><b>${r.userName}</b></td>
+    <td style="color:var(--accent3);font-weight:700">${r.amount.toFixed(2)} ₼</td>
+    <td>${r.method==='m10'?'📱 M10':'💳 Kart'}</td>
+    <td>${r.date||'-'}</td>
+    <td><span class="bdg ${r.status==='approved'?'bg':r.status==='rejected'?'br':'bw'}">${r.status==='approved'?'Təsdiqləndi':r.status==='rejected'?'Rədd edildi':'Gözləyir'}</span></td>
+    <td>${r.status==='pending'?`<div class="ab"><button class="ag" onclick="approveB(${r.id})">✓ Təsdiqlə</button><button class="ar" onclick="rejectB(${r.id})">✗ Rədd</button></div>`:'<span style="color:var(--muted);font-size:0.78rem">Tamamlandı</span>'}</td>
+  </tr>`).join('');
+}
+function renderBalTB(){renderBalRows('balTB',getBalReqs().slice().reverse());}
+function approveB(id){
+  const reqs=getBalReqs();const r=reqs.find(x=>x.id===id);if(!r||r.status!=='pending')return;
+  r.status='approved';saveBalReqs(reqs);
+  const users=getUsers();const u=users.find(x=>x.id===r.userId);
+  if(u){u.balance=+((u.balance||0)+r.amount).toFixed(2);saveUsers(users);
+    const cur=JSON.parse(localStorage.getItem('ds_current')||'null');
+    if(cur&&cur.id===u.id){cur.balance=u.balance;localStorage.setItem('ds_current',JSON.stringify(cur));}}
+  renderBalTB();renderBalRows('dashBT',reqs.slice(-8).reverse());updateBadge();
+  toast(`✅ ${r.amount.toFixed(2)} ₼ ${r.userName}-ə əlavə edildi`,'success');
+}
+function rejectB(id){
+  const reqs=getBalReqs();const r=reqs.find(x=>x.id===id);if(!r)return;
+  r.status='rejected';saveBalReqs(reqs);renderBalTB();updateBadge();toast('Sorğu rədd edildi');
+}
+function addManualBal(){
+  const email=document.getElementById('mEmail').value.trim();
+  const amt=parseFloat(document.getElementById('mAmt').value);
+  if(!email||isNaN(amt)||amt<=0){toast('Məlumatları doldurun','error');return;}
+  const users=getUsers();const u=users.find(x=>x.email===email);
+  if(!u){toast('İstifadəçi tapılmadı','error');return;}
+  u.balance=+((u.balance||0)+amt).toFixed(2);saveUsers(users);
+  const cur=JSON.parse(localStorage.getItem('ds_current')||'null');
+  if(cur&&cur.id===u.id){cur.balance=u.balance;localStorage.setItem('ds_current',JSON.stringify(cur));}
+  document.getElementById('mEmail').value='';document.getElementById('mAmt').value='';
+  toast(`✅ ${amt.toFixed(2)} ₼ ${u.name}-ə əlavə edildi`,'success');
+}
+
+// ═══════════ PRODUCTS ═══════════
+function addProd(){
+  const name=document.getElementById('pName').value.trim();
+  const price=parseFloat(document.getElementById('pPrice').value);
+  if(!name||!price){toast('Ad və qiymət mütləqdir','error');return;}
+  const prods=getProds();
+  const newId=Math.max(0,...prods.map(p=>p.id))+1;
+  const doSave = (imgData) => {
+    prods.push({id:newId,name,cat:document.getElementById('pCat').value,price,oldPrice:parseFloat(document.getElementById('pOldP').value)||null,icon:document.getElementById('pIcon').value.trim()||'📦',badge:document.getElementById('pBadge').value.trim(),desc:document.getElementById('pDesc').value.trim(),stock:true,img:imgData||null});
+    saveProds(prods);
+    ['pName','pPrice','pOldP','pIcon','pBadge','pDesc'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('pImg').value='';
+    document.getElementById('pImgPrev').innerHTML='🖼️';
+    renderProdTB();populateDiscSel();toast('✅ Məhsul əlavə edildi','success');
+  };
+  const imgInput=document.getElementById('pImg');
+  if(imgInput&&imgInput.files&&imgInput.files[0]){
+    getImgData('pImg').then(doSave);
+  } else doSave(null);
+}
+function renderProdTB(){
+  const prods=getProds();const tb=document.getElementById('prodTB');
+  if(!prods.length){tb.innerHTML='<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:26px">Məhsul yoxdur</td></tr>';return;}
+  tb.innerHTML=prods.map(p=>`<tr>
+    <td>${p.img?`<img src="${p.img}" style="width:44px;height:44px;object-fit:cover;border-radius:7px;display:block">`:
+    `<span style="font-size:1.4rem">${p.icon}</span>`}</td>
+    <td><b>${p.name}</b></td>
+    <td><span class="bdg bb">${catLbl(p.cat)}</span></td>
+    <td style="color:var(--accent3);font-weight:700">${p.price.toFixed(2)} ₼ ${p.oldPrice?`<span style="color:var(--muted);font-size:0.76rem;text-decoration:line-through;margin-left:4px">${p.oldPrice.toFixed(2)} ₼</span>`:''}</td>
+    <td>${p.badge?`<span class="bdg bw">${p.badge}</span>`:'-'}</td>
+    <td><div class="ab"><button class="ab2" onclick="openEdit(${p.id})">Düzəlt</button><button class="ar" onclick="delProd(${p.id})">Sil</button></div></td>
+  </tr>`).join('');
+}
+function openEdit(id){
+  const p=getProds().find(x=>x.id===id);if(!p)return;
+  document.getElementById('ePid').value=id;
+  document.getElementById('ePName').value=p.name;
+  document.getElementById('ePCat').value=p.cat;
+  document.getElementById('ePPrice').value=p.price;
+  document.getElementById('ePOldP').value=p.oldPrice||'';
+  document.getElementById('ePIcon').value=p.icon;
+  document.getElementById('ePBadge').value=p.badge||'';
+  document.getElementById('ePDesc').value=p.desc||'';
+  document.getElementById('ePImg').value='';
+  const prev=document.getElementById('ePImgPrev');
+  if(p.img) prev.innerHTML=`<img src="${p.img}" style="width:64px;height:64px;object-fit:cover;border-radius:8px">`;
+  else prev.innerHTML=p.icon||'🖼️';
+  document.getElementById('editOv').classList.add('show');
+}
+function closeEdit(){document.getElementById('editOv').classList.remove('show');}
+function saveEdit(){
+  const id=parseInt(document.getElementById('ePid').value);
+  const prods=getProds();const idx=prods.findIndex(x=>x.id===id);if(idx<0)return;
+  const doSave = (imgData) => {
+    prods[idx]={...prods[idx],name:document.getElementById('ePName').value.trim(),cat:document.getElementById('ePCat').value,price:parseFloat(document.getElementById('ePPrice').value),oldPrice:parseFloat(document.getElementById('ePOldP').value)||null,icon:document.getElementById('ePIcon').value.trim(),badge:document.getElementById('ePBadge').value.trim(),desc:document.getElementById('ePDesc').value.trim()};
+    if(imgData) prods[idx].img=imgData;
+    saveProds(prods);closeEdit();renderProdTB();renderPriceTB();populateDiscSel();toast('Məhsul yeniləndi','success');
+  };
+  const imgInput=document.getElementById('ePImg');
+  if(imgInput&&imgInput.files&&imgInput.files[0]){
+    getImgData('ePImg').then(doSave);
+  } else doSave(null);
+}
+function delProd(id){
+  if(!confirm('Bu məhsulu silmək istəyirsiniz?'))return;
+  saveProds(getProds().filter(p=>p.id!==id));renderProdTB();renderPriceTB();populateDiscSel();toast('Məhsul silindi');
+}
+
+// ═══════════ ACCOUNTS ═══════════
+function saveAccs(){
+  const cat=document.getElementById('accCat').value;
+  const prod=document.getElementById('accProd').value.trim();
+  const data=document.getElementById('accData').value.trim();
+  if(!prod||!data){toast('Məlumatları doldurun','error');return;}
+  const lines=data.split('\n').filter(l=>l.trim());
+  const accs=getAccounts();
+  accs.push({id:Date.now(),cat,prod,lines,date:new Date().toLocaleDateString()});
+  saveAccounts(accs);
+  document.getElementById('accProd').value='';document.getElementById('accData').value='';
+  renderAccTB();toast(`✅ ${lines.length} hesab yükləndi`,'success');
+}
+function renderAccTB(){
+  const accs=getAccounts();const tb=document.getElementById('accTB');
+  if(!accs.length){tb.innerHTML='<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:26px">Hesab yoxdur</td></tr>';return;}
+  tb.innerHTML=accs.map(a=>`<tr>
+    <td><span class="bdg bb">${a.cat}</span></td><td><b>${a.prod}</b></td>
+    <td style="color:var(--accent3);font-weight:700">${a.lines.length}</td><td>${a.date}</td>
+    <td><div class="ab"><button class="ab2" onclick="viewAcc(${a.id})">Bax</button><button class="ar" onclick="delAcc(${a.id})">Sil</button></div></td>
+  </tr>`).join('');
+}
+function viewAcc(id){const a=getAccounts().find(x=>x.id===id);if(!a)return;alert(`${a.prod} – ${a.lines.length} hesab:\n\n${a.lines.slice(0,10).join('\n')}${a.lines.length>10?'\n...':''}`);}
+function delAcc(id){if(!confirm('Bu qrupu silmək istəyirsiniz?'))return;saveAccounts(getAccounts().filter(a=>a.id!==id));renderAccTB();toast('Silindi');}
+
+// ═══════════ PRICES ═══════════
+function renderPriceTB(){
+  const prods=getProds();const tb=document.getElementById('priceTB');
+  tb.innerHTML=prods.map(p=>`<tr>
+    <td>${p.icon} <b>${p.name}</b></td>
+    <td><span class="bdg bb">${catLbl(p.cat)}</span></td>
+    <td style="color:var(--accent3);font-weight:700">${p.price.toFixed(2)} ₼</td>
+    <td><input type="number" step="0.01" value="${p.price.toFixed(2)}" id="np${p.id}" style="background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:6px 9px;color:var(--text);font-family:inherit;font-size:0.83rem;outline:none;width:110px" onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'"></td>
+    <td><button class="ag" onclick="updatePrice(${p.id})">Yenilə</button></td>
+  </tr>`).join('');
+}
+function updatePrice(id){
+  const val=parseFloat(document.getElementById('np'+id).value);
+  if(isNaN(val)||val<=0){toast('Yanlış qiymət','error');return;}
+  const prods=getProds();const p=prods.find(x=>x.id===id);if(!p)return;
+  p.oldPrice=p.price;p.price=val;saveProds(prods);renderPriceTB();renderProdTB();toast('Qiymət yeniləndi','success');
+}
+
+// ═══════════ DISCOUNTS ═══════════
+function populateDiscSel(){
+  const sel=document.getElementById('discProdSel');const prods=getProds();
+  sel.innerHTML='<option value="">Məhsul seç...</option>'+prods.map(p=>`<option value="${p.id}">${p.icon} ${p.name}</option>`).join('');
+}
+function applyDiscount(){
+  const id=parseInt(document.getElementById('discProdSel').value);
+  const pct=parseInt(document.getElementById('discPct').value);
+  if(!id||!pct||pct<1||pct>99){toast('Məhsul və endirim seçin','error');return;}
+  const prods=getProds();const p=prods.find(x=>x.id===id);if(!p)return;
+  p.oldPrice=p.price;p.price=+(p.price*(1-pct/100)).toFixed(2);p.badge=`-${pct}%`;
+  saveProds(prods);renderPriceTB();renderProdTB();populateDiscSel();toast(`✅ ${p.name} üçün ${pct}% endirim tətbiq edildi`,'success');
+}
+function renderCoupons(){
+  const coupons=getCoupons();const div=document.getElementById('couponList');const keys=Object.keys(coupons);
+  if(!keys.length){div.innerHTML='<div style="color:var(--muted);font-size:0.83rem;margin-bottom:10px">Aktiv kupon yoxdur</div>';return;}
+  div.innerHTML='<div style="display:flex;flex-wrap:wrap;gap:7px;margin-bottom:12px">'+
+    keys.map(k=>`<div style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:6px 12px;display:flex;align-items:center;gap:8px;font-size:0.83rem">
+      <span style="font-weight:700;color:var(--accent3)">${k}</span>
+      <span style="color:var(--muted)">–${coupons[k]}%</span>
+      <span style="cursor:pointer;color:var(--accent2)" onclick="delCoupon('${k}')">×</span>
+    </div>`).join('')+'</div>';
+}
+function addCoupon(){
+  const code=document.getElementById('cCode').value.trim().toUpperCase();
+  const pct=parseInt(document.getElementById('cPct').value);
+  if(!code||!pct||pct<1||pct>100){toast('Kod və endirim daxil edin','error');return;}
+  const c=getCoupons();c[code]=pct;saveCoupons(c);
+  document.getElementById('cCode').value='';document.getElementById('cPct').value='';
+  renderCoupons();updateDash();toast(`✅ Kupon "${code}" əlavə edildi (${pct}%)`,'success');
+}
+function delCoupon(code){const c=getCoupons();delete c[code];saveCoupons(c);renderCoupons();updateDash();toast('Kupon silindi');}
+
+// ═══════════ IMAGE ═══════════
+function previewImg(input, previewId){
+  const prev = document.getElementById(previewId);
+  if(input.files && input.files[0]){
+    const reader = new FileReader();
+    reader.onload = e => {
+      prev.innerHTML = `<img src="${e.target.result}" style="width:64px;height:64px;object-fit:cover;border-radius:8px">`;
+    };
+    reader.readAsDataURL(input.files[0]);
+  }
+}
+function getImgData(inputId){
+  const input = document.getElementById(inputId);
+  if(!input || !input.files || !input.files[0]) return null;
+  return new Promise(res => {
+    const r = new FileReader();
+    r.onload = e => res(e.target.result);
+    r.readAsDataURL(input.files[0]);
+  });
+}
+
+// ═══════════ TOAST ═══════════
+function toast(msg, type=''){
+  const el=document.getElementById('toast');
+  el.textContent=msg;el.className='toast'+(type?' '+type:'');
+  el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'),2800);
+}
+
+window.addEventListener('DOMContentLoaded',()=>{
+  if(isLogged) initAdmin();
+});
+</script>
+</body>
+</html>
