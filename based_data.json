@@ -1,0 +1,181 @@
+{
+  "site": {
+    "name": "Based.Az",
+    "slogan": "Premium EPİN & Digital Məhsullar",
+    "phone": "+994 50 000 0000",
+    "email": "support@based.az",
+    "telegram": "https://t.me/basedaz",
+    "instagram": "https://instagram.com/based.az",
+    "workingHours": "24/7"
+  },
+  "nav": [
+    { "id": 1, "label": "Ana Səhifə", "href": "#home" },
+    { "id": 2, "label": "Məhsullar", "href": "#products" },
+    { "id": 3, "label": "Necə Alınır?", "href": "#how" },
+    { "id": 4, "label": "Haqqımızda", "href": "#about" },
+    { "id": 5, "label": "Əlaqə", "href": "#contact" }
+  ],
+  "hero": {
+    "title": "Premium Digital Məhsullar",
+    "subtitle": "Netflix, Spotify, ChatGPT, YouTube Premium və daha çoxunu ən sərfəli qiymətlərlə əldə edin.",
+    "cta": "İndi Al",
+    "cta2": "Məhsullara Bax",
+    "badge": "🔥 Azərbaycanda №1 EPİN Mağazası"
+  },
+  "categories": [
+    { "id": 1, "icon": "🎬", "name": "Streaming", "count": 12 },
+    { "id": 2, "icon": "🎮", "name": "Oyunlar", "count": 24 },
+    { "id": 3, "icon": "🤖", "name": "AI Tools", "count": 8 },
+    { "id": 4, "icon": "🎵", "name": "Musiqi", "count": 6 },
+    { "id": 5, "icon": "📱", "name": "Proqramlar", "count": 15 },
+    { "id": 6, "icon": "☁️", "name": "Cloud", "count": 9 }
+  ],
+  "products": [
+    {
+      "id": 1,
+      "name": "Netflix Premium",
+      "category": "Streaming",
+      "icon": "🎬",
+      "color": "#E50914",
+      "color2": "#b00710",
+      "price": 15,
+      "oldPrice": 25,
+      "currency": "AZN",
+      "duration": "1 ay",
+      "badge": "🔥 Çox Satılan",
+      "features": ["4K Ultra HD", "4 ekran", "Reklamsız", "Offline baxış"],
+      "description": "Netflix Premium hesabı — bütün seriallar, filmlər, 4K keyfiyyət."
+    },
+    {
+      "id": 2,
+      "name": "Spotify Premium",
+      "category": "Musiqi",
+      "icon": "🎵",
+      "color": "#1DB954",
+      "color2": "#158a3e",
+      "price": 8,
+      "oldPrice": 15,
+      "currency": "AZN",
+      "duration": "1 ay",
+      "badge": "✨ Populyar",
+      "features": ["Reklamsız", "Offline dinləmə", "Yüksək keyfiyyət", "Bütün cihazlar"],
+      "description": "Spotify Premium — reklamsız, offline, sınırsız musiqi."
+    },
+    {
+      "id": 3,
+      "name": "ChatGPT Plus",
+      "category": "AI Tools",
+      "icon": "🤖",
+      "color": "#10A37F",
+      "color2": "#0d8066",
+      "price": 20,
+      "oldPrice": 35,
+      "currency": "AZN",
+      "duration": "1 ay",
+      "badge": "⚡ Yeni",
+      "features": ["GPT-4o", "DALL-E 3", "Sürətli cavab", "Sınırsız sorğu"],
+      "description": "ChatGPT Plus — GPT-4o ilə sınırsız AI əməkdaşlığı."
+    },
+    {
+      "id": 4,
+      "name": "YouTube Premium",
+      "category": "Streaming",
+      "icon": "▶️",
+      "color": "#FF0000",
+      "color2": "#cc0000",
+      "price": 10,
+      "oldPrice": 18,
+      "currency": "AZN",
+      "duration": "1 ay",
+      "badge": "",
+      "features": ["Reklamsız", "Arxa plan", "YouTube Music", "Offline video"],
+      "description": "YouTube Premium — reklamsız izləmə, offline rejimdə."
+    },
+    {
+      "id": 5,
+      "name": "Disney+ Premium",
+      "category": "Streaming",
+      "icon": "🏰",
+      "color": "#113CCF",
+      "color2": "#0d2fa0",
+      "price": 12,
+      "oldPrice": 20,
+      "currency": "AZN",
+      "duration": "1 ay",
+      "badge": "",
+      "features": ["4K HDR", "Marvel", "Star Wars", "Pixar"],
+      "description": "Disney+ — bütün sevimli filmlər bir yerdə."
+    },
+    {
+      "id": 6,
+      "name": "Canva Pro",
+      "category": "Proqramlar",
+      "icon": "🎨",
+      "color": "#7D2AE8",
+      "color2": "#6320bb",
+      "price": 18,
+      "oldPrice": 30,
+      "currency": "AZN",
+      "duration": "1 ay",
+      "badge": "💎 Pro",
+      "features": ["Premium şablonlar", "Arxa fon silmə", "Magic Resize", "Sınırsız yükləmə"],
+      "description": "Canva Pro — professional dizayn aləti."
+    },
+    {
+      "id": 7,
+      "name": "PUBG UC",
+      "category": "Oyunlar",
+      "icon": "🎮",
+      "color": "#F5A623",
+      "color2": "#c07d10",
+      "price": 5,
+      "oldPrice": 9,
+      "currency": "AZN",
+      "duration": "600 UC",
+      "badge": "🎮 Oyun",
+      "features": ["Ani çatdırılma", "Təhlükəsiz", "Rəsmi", "24/7"],
+      "description": "PUBG Mobile UC — sürətli və təhlükəsiz çatdırılma."
+    },
+    {
+      "id": 8,
+      "name": "Microsoft 365",
+      "category": "Proqramlar",
+      "icon": "💼",
+      "color": "#D83B01",
+      "color2": "#a82d01",
+      "price": 22,
+      "oldPrice": 40,
+      "currency": "AZN",
+      "duration": "1 ay",
+      "badge": "",
+      "features": ["Word, Excel, PowerPoint", "1TB OneDrive", "5 cihaz", "Teams"],
+      "description": "Microsoft 365 — tam ofis paketi, bulud ilə."
+    }
+  ],
+  "stats": [
+    { "num": "50K+", "label": "Müştəri" },
+    { "num": "100+", "label": "Məhsul" },
+    { "num": "24/7", "label": "Dəstək" },
+    { "num": "99%", "label": "Məmnuniyyət" }
+  ],
+  "howItWorks": [
+    { "step": "01", "icon": "🔍", "title": "Məhsul Seç", "desc": "Lazım olan digital məhsulu kataloqdan seçin." },
+    { "step": "02", "icon": "💳", "title": "Ödəniş Et", "desc": "Kart, bank köçürməsi və ya digər üsullarla ödəyin." },
+    { "step": "03", "icon": "⚡", "title": "Ani Al", "desc": "Ödəniş təsdiqlənən kimi hesabınıza avtomatik göndərilir." }
+  ],
+  "testimonials": [
+    { "id": 1, "name": "Anar M.", "avatar": "AM", "stars": 5, "text": "Çox sürətli çatdırıldı, Netflix hesabı anında işə düşdü. Tövsiyə edirəm!" },
+    { "id": 2, "name": "Sevinc H.", "avatar": "SH", "stars": 5, "text": "Spotify Premium aldım, hər şey qaydasında. Qiymətlər çox münasibdir." },
+    { "id": 3, "name": "Elçin B.", "avatar": "EB", "stars": 5, "text": "ChatGPT Plus üçün mükəmməl xidmət. Artıq daimi müştəriyəm!" },
+    { "id": 4, "name": "Nigar A.", "avatar": "NA", "stars": 5, "text": "Based.az-dan başqa yerdən almıram artıq. Etibarlı və sürətli!" }
+  ],
+  "faq": [
+    { "id": 1, "q": "Hesabı aldıqdan sonra nə qədər vaxtda çatır?", "a": "Ödəniş təsdiqlənən kimi, adətən 5-15 dəqiqə ərzində hesabınıza göndərilir." },
+    { "id": 2, "q": "Ödəniş üsulları hansılardır?", "a": "Kart ödənişi (Visa/Mastercard), bank köçürməsi, M10, Kapital Bank kartları qəbul edilir." },
+    { "id": 3, "q": "Hesabda problem olsa nə etməli?", "a": "24/7 dəstək xidmətimizlə Telegram və ya email vasitəsilə əlaqə saxlayın, dərhal həll edərik." },
+    { "id": 4, "q": "Hesablar təhlükəsizdirmi?", "a": "Bəli, bütün hesablar rəsmi kanallardan alınır və sizin üçün şəxsi şifrə ilə qorunur." }
+  ],
+  "footer": {
+    "copyright": "© 2025 Based.Az — Bütün hüquqlar qorunur."
+  }
+}

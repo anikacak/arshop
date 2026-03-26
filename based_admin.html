@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Panel — Based.Az</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0a0f; --bg2: #0f0f1a; --bg3: #141420;
+  --card: #13131e; --card2: #1a1a28;
+  --border: rgba(255,255,255,0.07); --border2: rgba(255,255,255,0.12);
+  --accent: #6c63ff; --accent2: #5a52e0; --accent-glow: rgba(108,99,255,0.25);
+  --green: #00d97e; --red: #ff4757;
+  --text: #e8e8f0; --text2: #9090aa; --text3: #5a5a72; --white: #ffffff;
+}
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Sora',sans-serif; background:var(--bg); color:var(--text); display:flex; min-height:100vh; }
+
+/* SIDEBAR */
+.sidebar {
+  width:252px; background:var(--bg2);
+  border-right:1px solid var(--border);
+  min-height:100vh; position:fixed; left:0; top:0; bottom:0;
+  display:flex; flex-direction:column; overflow-y:auto; z-index:100;
+}
+.sb-logo {
+  padding:24px 20px 18px;
+  font-size:20px; font-weight:800; color:var(--white);
+  border-bottom:1px solid var(--border); margin-bottom:8px;
+  display:flex; align-items:center; gap:8px;
+}
+.sb-logo .dot { width:8px; height:8px; border-radius:50%; background:var(--accent); box-shadow:0 0 8px var(--accent); }
+.sb-logo span { color:var(--accent); }
+.sb-logo small { display:block; font-size:11px; font-weight:400; color:var(--text3); margin-top:2px; }
+.sb-section { font-size:10px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--text3); padding:12px 20px 4px; font-family:'JetBrains Mono',monospace; }
+.sb-item {
+  display:flex; align-items:center; gap:10px;
+  padding:11px 20px; color:var(--text2);
+  cursor:pointer; transition:all 0.2s;
+  font-size:13px; font-weight:500;
+  border-left:2px solid transparent;
+}
+.sb-item:hover { color:var(--white); background:rgba(255,255,255,0.04); }
+.sb-item.active { color:var(--accent); background:rgba(108,99,255,0.08); border-left-color:var(--accent); font-weight:600; }
+.sb-icon { font-size:16px; width:18px; text-align:center; }
+.sb-footer { margin-top:auto; padding:16px 20px; border-top:1px solid var(--border); font-size:11px; color:var(--text3); font-family:'JetBrains Mono',monospace; }
+
+/* MAIN */
+.main { margin-left:252px; flex:1; min-height:100vh; display:flex; flex-direction:column; }
+
+/* TOPBAR */
+.topbar {
+  background:rgba(10,10,15,0.9); backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+  padding:14px 28px;
+  display:flex; align-items:center; justify-content:space-between;
+  position:sticky; top:0; z-index:50;
+}
+.tb-title { font-size:16px; font-weight:700; color:var(--white); font-family:'JetBrains Mono',monospace; }
+.tb-actions { display:flex; gap:10px; }
+.btn {
+  display:inline-flex; align-items:center; gap:6px;
+  padding:9px 18px; border-radius:8px;
+  font-family:'Sora',sans-serif; font-weight:700; font-size:13px;
+  cursor:pointer; border:none; text-decoration:none; transition:all 0.2s;
+}
+.btn-primary { background:var(--accent); color:white; }
+.btn-primary:hover { background:var(--accent2); transform:translateY(-1px); }
+.btn-ghost { background:transparent; border:1px solid var(--border2); color:var(--text2); }
+.btn-ghost:hover { border-color:var(--accent); color:var(--accent); background:rgba(108,99,255,0.08); }
+.btn-green { background:var(--green); color:#0a0a0f; }
+.btn-green:hover { filter:brightness(1.1); transform:translateY(-1px); }
+.btn-red { background:rgba(255,71,87,0.15); color:var(--red); border:1px solid rgba(255,71,87,0.2); }
+.btn-red:hover { background:var(--red); color:white; }
+.btn-sm { padding:7px 12px; font-size:12px; }
+
+/* CONTENT */
+.content { padding:28px; flex:1; }
+.panel { display:none; animation:fadeIn 0.2s ease; }
+.panel.active { display:block; }
+@keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+
+/* DASHBOARD */
+.stats-row { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:24px; }
+.stat-card {
+  background:var(--card); border:1px solid var(--border);
+  border-radius:12px; padding:20px;
+}
+.sc-top { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px; }
+.sc-icon { font-size:28px; }
+.sc-badge { font-size:10px; font-weight:700; padding:3px 8px; border-radius:20px; background:rgba(0,217,126,0.12); color:var(--green); }
+.sc-num { font-family:'JetBrains Mono',monospace; font-size:32px; font-weight:600; color:var(--white); }
+.sc-label { color:var(--text3); font-size:12px; margin-top:4px; }
+
+/* CARD */
+.card { background:var(--card); border:1px solid var(--border); border-radius:14px; overflow:hidden; margin-bottom:20px; }
+.card-header { padding:16px 22px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; }
+.card-title { font-size:15px; font-weight:700; color:var(--white); display:flex; align-items:center; gap:8px; }
+.card-body { padding:22px; }
+
+/* FORM */
+.fg { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+.fg-1 { grid-template-columns:1fr; }
+.fg-3 { grid-template-columns:1fr 1fr 1fr; }
+.fg-full { grid-column:1/-1; }
+.form-group { display:flex; flex-direction:column; gap:5px; }
+.form-group label { font-size:11px; font-weight:700; color:var(--text3); text-transform:uppercase; letter-spacing:1px; font-family:'JetBrains Mono',monospace; }
+.form-group input, .form-group textarea, .form-group select {
+  background:var(--card2); border:1px solid var(--border);
+  border-radius:8px; padding:10px 14px;
+  font-family:'Sora',sans-serif; font-size:13px; color:var(--text);
+  outline:none; transition:border-color 0.2s;
+}
+.form-group input:focus, .form-group textarea:focus { border-color:var(--accent); background:rgba(108,99,255,0.05); }
+.form-group textarea { resize:vertical; min-height:90px; line-height:1.6; }
+
+/* ITEMS */
+.item-card {
+  background:var(--card2); border:1px solid var(--border);
+  border-radius:10px; margin-bottom:12px; overflow:hidden;
+}
+.item-head {
+  padding:14px 18px; display:flex; align-items:center;
+  justify-content:space-between; cursor:pointer; transition:background 0.2s;
+}
+.item-head:hover { background:rgba(255,255,255,0.03); }
+.item-head-left { display:flex; align-items:center; gap:10px; }
+.item-head-icon { font-size:20px; }
+.item-head-title { font-weight:600; color:var(--white); font-size:14px; }
+.item-head-sub { color:var(--text3); font-size:12px; margin-top:2px; }
+.item-actions { display:flex; gap:8px; align-items:center; }
+.item-chevron { color:var(--text3); font-size:14px; transition:transform 0.2s; }
+.item-body { display:none; padding:18px; border-top:1px solid var(--border); }
+.item-card.open .item-chevron { transform:rotate(180deg); }
+.item-card.open .item-body { display:block; }
+
+/* TABLE */
+.tbl { width:100%; border-collapse:collapse; }
+.tbl th { padding:10px 14px; text-align:left; font-size:11px; font-weight:700; color:var(--text3); text-transform:uppercase; letter-spacing:1px; border-bottom:1px solid var(--border); font-family:'JetBrains Mono',monospace; }
+.tbl td { padding:12px 14px; border-bottom:1px solid var(--border); font-size:13px; vertical-align:middle; }
+.tbl tr:last-child td { border-bottom:none; }
+.tbl tr:hover td { background:rgba(255,255,255,0.02); }
+.tbl input { background:var(--card); border:1px solid var(--border); border-radius:6px; padding:7px 10px; font-family:'Sora',sans-serif; font-size:13px; color:var(--text); outline:none; width:100%; transition:border-color 0.2s; }
+.tbl input:focus { border-color:var(--accent); }
+
+/* PRODUCT COLOR PREVIEW */
+.color-wrap { display:flex; gap:8px; align-items:center; }
+.color-preview { width:32px; height:32px; border-radius:6px; border:1px solid var(--border); flex-shrink:0; }
+
+/* NOTIF */
+.notif {
+  position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(100px);
+  z-index:9999; background:var(--green); color:#0a0a0f;
+  font-weight:700; font-size:13px; padding:12px 24px;
+  border-radius:50px; box-shadow:0 8px 32px rgba(0,217,126,0.3);
+  transition:transform 0.3s; white-space:nowrap;
+}
+.notif.show { transform:translateX(-50%) translateY(0); }
+.notif.error { background:var(--red); color:white; box-shadow:0 8px 32px rgba(255,71,87,0.3); }
+
+.divider { border:none; border-top:1px solid var(--border); margin:20px 0; }
+
+@media(max-width:900px){ .sidebar{width:56px;} .sb-logo>span:last-child,.sb-section,.sb-item span,.sb-footer{display:none;} .sb-item{padding:14px;justify-content:center;} .main{margin-left:56px;} .stats-row{grid-template-columns:repeat(2,1fr);} .fg{grid-template-columns:1fr;} }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <div class="sb-logo">
+    <div class="dot"></div>
+    <div>Based<span>.Az</span><small>Admin Panel</small></div>
+  </div>
+
+  <div class="sb-section">// əsas</div>
+  <div class="sb-item active" data-panel="dashboard"><span class="sb-icon">📊</span><span>Dashboard</span></div>
+
+  <div class="sb-section">// kontent</div>
+  <div class="sb-item" data-panel="siteinfo"><span class="sb-icon">⚙️</span><span>Sayt Məlumatları</span></div>
+  <div class="sb-item" data-panel="hero"><span class="sb-icon">🖥️</span><span>Hero Bölməsi</span></div>
+  <div class="sb-item" data-panel="products"><span class="sb-icon">📦</span><span>Məhsullar</span></div>
+  <div class="sb-item" data-panel="categories"><span class="sb-icon">📁</span><span>Kateqoriyalar</span></div>
+  <div class="sb-item" data-panel="howitworks"><span class="sb-icon">🔢</span><span>Necə İşləyir</span></div>
+  <div class="sb-item" data-panel="testimonials"><span class="sb-icon">⭐</span><span>Rəylər</span></div>
+  <div class="sb-item" data-panel="faq"><span class="sb-icon">❓</span><span>FAQ</span></div>
+  <div class="sb-item" data-panel="stats"><span class="sb-icon">📈</span><span>Statistikalar</span></div>
+  <div class="sb-item" data-panel="nav"><span class="sb-icon">🔗</span><span>Naviqasiya</span></div>
+  <div class="sb-item" data-panel="footer"><span class="sb-icon">🦶</span><span>Footer</span></div>
+
+  <div class="sb-footer">v1.0 // based.az</div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <div class="tb-title" id="page-title">// dashboard</div>
+    <div class="tb-actions">
+      <button class="btn btn-ghost" onclick="window.open('index.html','_blank')">👁 Saytı Bax</button>
+      <button class="btn btn-green" onclick="saveAll()">💾 Yadda Saxla</button>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- DASHBOARD -->
+    <div class="panel active" id="panel-dashboard">
+      <div class="stats-row">
+        <div class="stat-card"><div class="sc-top"><span class="sc-icon">📦</span><span class="sc-badge">aktiv</span></div><div class="sc-num" id="d-products">0</div><div class="sc-label">Məhsul</div></div>
+        <div class="stat-card"><div class="sc-top"><span class="sc-icon">📁</span><span class="sc-badge">aktiv</span></div><div class="sc-num" id="d-cats">0</div><div class="sc-label">Kateqoriya</div></div>
+        <div class="stat-card"><div class="sc-top"><span class="sc-icon">⭐</span><span class="sc-badge">aktiv</span></div><div class="sc-num" id="d-testi">0</div><div class="sc-label">Rəy</div></div>
+        <div class="stat-card"><div class="sc-top"><span class="sc-icon">❓</span><span class="sc-badge">aktiv</span></div><div class="sc-num" id="d-faq">0</div><div class="sc-label">FAQ</div></div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title">ℹ️ İstifadə Qaydası</div></div>
+        <div class="card-body">
+          <p style="color:var(--text2);font-size:14px;line-height:1.9">
+            Sol menyudan redaktə etmək istədiyiniz bölməni seçin. Dəyişiklikləri etdikdən sonra <strong style="color:var(--white)">"Yadda Saxla"</strong> düyməsinə basın — bu <code style="background:var(--card2);padding:2px 8px;border-radius:4px;color:var(--accent)">data.json</code> faylını endirəcək. Endirdikdən sonra onu sayt qovluğunuza köçürün.
+          </p>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:20px">
+            <div style="background:rgba(0,217,126,0.05);border:1px solid rgba(0,217,126,0.15);border-radius:8px;padding:14px">
+              <div style="font-weight:700;color:var(--green);font-size:13px">✓ Real-time Redaktə</div>
+              <div style="color:var(--text3);font-size:12px;margin-top:4px">Hər bölmə ayrı panel</div>
+            </div>
+            <div style="background:rgba(108,99,255,0.05);border:1px solid rgba(108,99,255,0.15);border-radius:8px;padding:14px">
+              <div style="font-weight:700;color:var(--accent);font-size:13px">💾 JSON Export</div>
+              <div style="color:var(--text3);font-size:12px;margin-top:4px">data.json avtomatik endərilir</div>
+            </div>
+            <div style="background:rgba(255,71,87,0.05);border:1px solid rgba(255,71,87,0.15);border-radius:8px;padding:14px">
+              <div style="font-weight:700;color:var(--red);font-size:13px">⚡ Ani Dəyişiklik</div>
+              <div style="color:var(--text3);font-size:12px;margin-top:4px">Sayt dərhal güncəllənir</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SITE INFO -->
+    <div class="panel" id="panel-siteinfo">
+      <div class="card">
+        <div class="card-header"><div class="card-title">⚙️ Sayt Məlumatları</div></div>
+        <div class="card-body">
+          <div class="fg">
+            <div class="form-group"><label>Sayt Adı</label><input id="si-name" type="text"></div>
+            <div class="form-group"><label>Slogan</label><input id="si-slogan" type="text"></div>
+            <div class="form-group"><label>Telefon</label><input id="si-phone" type="text"></div>
+            <div class="form-group"><label>Email</label><input id="si-email" type="email"></div>
+            <div class="form-group"><label>Telegram Link</label><input id="si-telegram" type="text"></div>
+            <div class="form-group"><label>Instagram Link</label><input id="si-instagram" type="text"></div>
+            <div class="form-group fg-full"><label>İş Saatları</label><input id="si-hours" type="text"></div>
+          </div>
+          <hr class="divider">
+          <button class="btn btn-primary" onclick="saveSiteInfo()">💾 Yadda Saxla</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- HERO -->
+    <div class="panel" id="panel-hero">
+      <div class="card">
+        <div class="card-header"><div class="card-title">🖥️ Hero Bölməsi</div></div>
+        <div class="card-body">
+          <div class="fg fg-1">
+            <div class="form-group"><label>Badge Mətni</label><input id="h-badge" type="text"></div>
+            <div class="form-group"><label>Başlıq 1 (ağ)</label><input id="h-title1" type="text"></div>
+            <div class="form-group"><label>Başlıq 2 (accent)</label><input id="h-title2" type="text"></div>
+            <div class="form-group"><label>Alt Başlıq</label><textarea id="h-sub"></textarea></div>
+            <div class="form-group"><label>Düymə 1</label><input id="h-cta1" type="text"></div>
+            <div class="form-group"><label>Düymə 2</label><input id="h-cta2" type="text"></div>
+          </div>
+          <hr class="divider">
+          <button class="btn btn-primary" onclick="saveHero()">💾 Yadda Saxla</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- PRODUCTS -->
+    <div class="panel" id="panel-products">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">📦 Məhsullar</div>
+          <button class="btn btn-primary btn-sm" onclick="addProduct()">+ Əlavə Et</button>
+        </div>
+        <div class="card-body">
+          <div id="products-list"></div>
+          <hr class="divider">
+          <button class="btn btn-primary" onclick="saveProducts()">💾 Hamısını Saxla</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- CATEGORIES -->
+    <div class="panel" id="panel-categories">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">📁 Kateqoriyalar</div>
+          <button class="btn btn-primary btn-sm" onclick="addCategory()">+ Əlavə Et</button>
+        </div>
+        <div class="card-body">
+          <div style="overflow-x:auto">
+            <table class="tbl"><thead><tr><th>#</th><th>İkon</th><th>Ad</th><th>Say</th><th>Sil</th></tr></thead>
+            <tbody id="cats-tbody"></tbody></table>
+          </div>
+          <hr class="divider">
+          <button class="btn btn-primary" onclick="saveCategories()">💾 Yadda Saxla</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- HOW IT WORKS -->
+    <div class="panel" id="panel-howitworks">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">🔢 Necə İşləyir</div>
+          <button class="btn btn-primary btn-sm" onclick="addHowStep()">+ Əlavə Et</button>
+        </div>
+        <div class="card-body">
+          <div id="how-list"></div>
+          <hr class="divider">
+          <button class="btn btn-primary" onclick="saveHow()">💾 Yadda Saxla</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TESTIMONIALS -->
+    <div class="panel" id="panel-testimonials">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">⭐ Rəylər</div>
+          <button class="btn btn-primary btn-sm" onclick="addTestimonial()">+ Əlavə Et</button>
+        </div>
+        <div class="card-body">
+          <div id="testi-list"></div>
+          <hr class="divider">
+          <button class="btn btn-primary" onclick="saveTestimonials()">💾 Yadda Saxla</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- FAQ -->
+    <div class="panel" id="panel-faq">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">❓ Tez-Tez Soruşulanlar</div>
+          <button class="btn btn-primary btn-sm" onclick="addFaq()">+ Əlavə Et</button>
+        </div>
+        <div class="card-body">
+          <div id="faq-list"></div>
+          <hr class="divider">
+          <button class="btn btn-primary" onclick="saveFaq()">💾 Yadda Saxla</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- STATS -->
+    <div class="panel" id="panel-stats">
+      <div class="card">
+        <div class="card-header"><div class="card-title">📈 Statistikalar</div></div>
+        <div class="card-body">
+          <div style="overflow-x:auto">
+            <table class="tbl"><thead><tr><th>#</th><th>Rəqəm</th><th>Label</th></tr></thead>
+            <tbody id="stats-tbody"></tbody></table>
+          </div>
+          <hr class="divider">
+          <button class="btn btn-primary" onclick="saveStats()">💾 Yadda Saxla</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- NAV -->
+    <div class="panel" id="panel-nav">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">🔗 Naviqasiya</div>
+          <button class="btn btn-primary btn-sm" onclick="addNav()">+ Əlavə Et</button>
+        </div>
+        <div class="card-body">
+          <div style="overflow-x:auto">
+            <table class="tbl"><thead><tr><th>#</th><th>Label</th><th>Link</th><th>Sil</th></tr></thead>
+            <tbody id="nav-tbody"></tbody></table>
+          </div>
+          <hr class="divider">
+          <button class="btn btn-primary" onclick="saveNav()">💾 Yadda Saxla</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="panel" id="panel-footer">
+      <div class="card">
+        <div class="card-header"><div class="card-title">🦶 Footer</div></div>
+        <div class="card-body">
+          <div class="fg fg-1">
+            <div class="form-group"><label>Copyright Mətni</label><input id="ft-copy" type="text"></div>
+          </div>
+          <hr class="divider">
+          <button class="btn btn-primary" onclick="saveFooter()">💾 Yadda Saxla</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="notif" id="notif">✓ Yadda saxlandı!</div>
+
+<script>
+let d = {};
+
+async function loadData() {
+  try {
+    const res = await fetch('data.json?t='+Date.now());
+    d = await res.json();
+    populateAll(); updateDash();
+  } catch(e){ showNotif('data.json yüklənmədi!','error'); }
+}
+
+function updateDash() {
+  document.getElementById('d-products').textContent = d.products?.length||0;
+  document.getElementById('d-cats').textContent = d.categories?.length||0;
+  document.getElementById('d-testi').textContent = d.testimonials?.length||0;
+  document.getElementById('d-faq').textContent = d.faq?.length||0;
+}
+
+function set(id,v){ const el=document.getElementById(id); if(el) el.value=v||''; }
+function get(id){ return document.getElementById(id)?.value||''; }
+
+function populateAll() {
+  // Site info
+  set('si-name',d.site.name); set('si-slogan',d.site.slogan);
+  set('si-phone',d.site.phone); set('si-email',d.site.email);
+  set('si-telegram',d.site.telegram); set('si-instagram',d.site.instagram);
+  set('si-hours',d.site.workingHours);
+  // Hero
+  set('h-badge',d.hero.badge); set('h-title1',d.hero.title?.split(' ')[0]||'');
+  set('h-title2',d.hero.title?.split(' ').slice(1).join(' ')||'');
+  set('h-sub',d.hero.subtitle); set('h-cta1',d.hero.cta); set('h-cta2',d.hero.cta2);
+  // Lists
+  renderProducts(); renderCategories(); renderHow(); renderTestimonials();
+  renderFaq(); renderStats(); renderNav();
+  // Footer
+  set('ft-copy',d.footer.copyright);
+}
+
+// ===== PRODUCTS =====
+function renderProducts() {
+  document.getElementById('products-list').innerHTML = d.products.map((p,i)=>`
+    <div class="item-card" id="pc-${i}">
+      <div class="item-head" onclick="toggleItem(this)">
+        <div class="item-head-left">
+          <span class="item-head-icon">${p.icon}</span>
+          <div>
+            <div class="item-head-title">${p.name}</div>
+            <div class="item-head-sub">${p.price} AZN · ${p.category}</div>
+          </div>
+        </div>
+        <div class="item-actions">
+          <button class="btn btn-red btn-sm" onclick="event.stopPropagation();delProduct(${i})">🗑</button>
+          <span class="item-chevron">▼</span>
+        </div>
+      </div>
+      <div class="item-body">
+        <div class="fg" style="gap:14px">
+          <div class="form-group"><label>Ad</label><input type="text" id="p-name-${i}" value="${p.name}"></div>
+          <div class="form-group"><label>Kateqoriya</label><input type="text" id="p-cat-${i}" value="${p.category}"></div>
+          <div class="form-group"><label>İkon (emoji)</label><input type="text" id="p-icon-${i}" value="${p.icon}"></div>
+          <div class="form-group"><label>Badge</label><input type="text" id="p-badge-${i}" value="${p.badge||''}"></div>
+          <div class="form-group"><label>Qiymət (AZN)</label><input type="number" id="p-price-${i}" value="${p.price}"></div>
+          <div class="form-group"><label>Köhnə Qiymət</label><input type="number" id="p-old-${i}" value="${p.oldPrice}"></div>
+          <div class="form-group"><label>Müddət</label><input type="text" id="p-dur-${i}" value="${p.duration}"></div>
+          <div class="form-group">
+            <label>Rəng 1</label>
+            <div class="color-wrap">
+              <input type="color" style="width:38px;height:34px;padding:2px;border-radius:6px;border:1px solid var(--border);cursor:pointer;background:transparent" id="p-c1-${i}" value="${p.color}" oninput="document.getElementById('p-c1t-${i}').value=this.value">
+              <input type="text" id="p-c1t-${i}" value="${p.color}" oninput="document.getElementById('p-c1-${i}').value=this.value">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Rəng 2</label>
+            <div class="color-wrap">
+              <input type="color" style="width:38px;height:34px;padding:2px;border-radius:6px;border:1px solid var(--border);cursor:pointer;background:transparent" id="p-c2-${i}" value="${p.color2}" oninput="document.getElementById('p-c2t-${i}').value=this.value">
+              <input type="text" id="p-c2t-${i}" value="${p.color2}" oninput="document.getElementById('p-c2-${i}').value=this.value">
+            </div>
+          </div>
+          <div class="form-group fg-full"><label>Açıqlama</label><textarea id="p-desc-${i}">${p.description}</textarea></div>
+          <div class="form-group fg-full"><label>Xüsusiyyətlər (hər sətir ayrı)</label><textarea id="p-feat-${i}">${(p.features||[]).join('\n')}</textarea></div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+function addProduct(){
+  d.products.push({id:Date.now(),name:'Yeni Məhsul',category:'Streaming',icon:'🎬',color:'#6c63ff',color2:'#5a52e0',price:10,oldPrice:20,currency:'AZN',duration:'1 ay',badge:'',features:['Xüsusiyyət 1'],description:'Açıqlama...'});
+  renderProducts(); updateDash();
+}
+function delProduct(i){ d.products.splice(i,1); renderProducts(); updateDash(); }
+function saveProducts(){
+  d.products = d.products.map((p,i)=>({
+    ...p,
+    name:get(`p-name-${i}`), category:get(`p-cat-${i}`),
+    icon:get(`p-icon-${i}`), badge:get(`p-badge-${i}`),
+    price:parseFloat(get(`p-price-${i}`))||p.price,
+    oldPrice:parseFloat(get(`p-old-${i}`))||p.oldPrice,
+    duration:get(`p-dur-${i}`),
+    color:document.getElementById(`p-c1-${i}`)?.value||p.color,
+    color2:document.getElementById(`p-c2-${i}`)?.value||p.color2,
+    description:get(`p-desc-${i}`),
+    features:get(`p-feat-${i}`).split('\n').filter(Boolean)
+  }));
+  saveAll();
+}
+
+// ===== CATEGORIES =====
+function renderCategories(){
+  document.getElementById('cats-tbody').innerHTML = d.categories.map((c,i)=>`
+    <tr>
+      <td><input id="cat-icon-${i}" value="${c.icon}" style="width:60px;text-align:center"></td>
+      <td><input id="cat-name-${i}" value="${c.name}"></td>
+      <td><input id="cat-count-${i}" value="${c.count}" type="number" style="width:80px"></td>
+      <td><button class="btn btn-red btn-sm" onclick="delCat(${i})">🗑</button></td>
+    </tr>
+  `).join('');
+}
+function addCategory(){ d.categories.push({id:Date.now(),icon:'📦',name:'Yeni',count:0}); renderCategories(); updateDash(); }
+function delCat(i){ d.categories.splice(i,1); renderCategories(); updateDash(); }
+function saveCategories(){
+  d.categories = d.categories.map((c,i)=>({...c,icon:get(`cat-icon-${i}`),name:get(`cat-name-${i}`),count:parseInt(get(`cat-count-${i}`))||0}));
+  saveAll();
+}
+
+// ===== HOW IT WORKS =====
+function renderHow(){
+  document.getElementById('how-list').innerHTML = d.howItWorks.map((h,i)=>`
+    <div class="item-card">
+      <div class="item-head" onclick="toggleItem(this)">
+        <div class="item-head-left"><span class="item-head-icon">${h.icon}</span><div><div class="item-head-title">${h.title}</div><div class="item-head-sub">Addım ${h.step}</div></div></div>
+        <div class="item-actions"><button class="btn btn-red btn-sm" onclick="event.stopPropagation();delHow(${i})">🗑</button><span class="item-chevron">▼</span></div>
+      </div>
+      <div class="item-body">
+        <div class="fg">
+          <div class="form-group"><label>Addım №</label><input type="text" id="hw-step-${i}" value="${h.step}"></div>
+          <div class="form-group"><label>İkon</label><input type="text" id="hw-icon-${i}" value="${h.icon}"></div>
+          <div class="form-group"><label>Başlıq</label><input type="text" id="hw-title-${i}" value="${h.title}"></div>
+          <div class="form-group fg-full"><label>Açıqlama</label><textarea id="hw-desc-${i}">${h.desc}</textarea></div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+function addHowStep(){ d.howItWorks.push({step:'0'+( d.howItWorks.length+1),icon:'⚡',title:'Yeni Addım',desc:'Açıqlama...'}); renderHow(); }
+function delHow(i){ d.howItWorks.splice(i,1); renderHow(); }
+function saveHow(){
+  d.howItWorks = d.howItWorks.map((h,i)=>({step:get(`hw-step-${i}`),icon:get(`hw-icon-${i}`),title:get(`hw-title-${i}`),desc:get(`hw-desc-${i}`)}));
+  saveAll();
+}
+
+// ===== TESTIMONIALS =====
+function renderTestimonials(){
+  document.getElementById('testi-list').innerHTML = d.testimonials.map((t,i)=>`
+    <div class="item-card">
+      <div class="item-head" onclick="toggleItem(this)">
+        <div class="item-head-left"><span class="item-head-icon">⭐</span><div><div class="item-head-title">${t.name}</div><div class="item-head-sub">${'★'.repeat(t.stars)}</div></div></div>
+        <div class="item-actions"><button class="btn btn-red btn-sm" onclick="event.stopPropagation();delTesti(${i})">🗑</button><span class="item-chevron">▼</span></div>
+      </div>
+      <div class="item-body">
+        <div class="fg">
+          <div class="form-group"><label>Ad</label><input type="text" id="tm-name-${i}" value="${t.name}"></div>
+          <div class="form-group"><label>Avatar (baş hərflər)</label><input type="text" id="tm-av-${i}" value="${t.avatar}"></div>
+          <div class="form-group"><label>Ulduz (1-5)</label><input type="number" min="1" max="5" id="tm-stars-${i}" value="${t.stars}"></div>
+          <div class="form-group fg-full"><label>Rəy Mətni</label><textarea id="tm-text-${i}">${t.text}</textarea></div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+function addTestimonial(){ d.testimonials.push({id:Date.now(),name:'Yeni İstifadəçi',avatar:'YI',stars:5,text:'Rəy mətni...'}); renderTestimonials(); updateDash(); }
+function delTesti(i){ d.testimonials.splice(i,1); renderTestimonials(); updateDash(); }
+function saveTestimonials(){
+  d.testimonials = d.testimonials.map((t,i)=>({...t,name:get(`tm-name-${i}`),avatar:get(`tm-av-${i}`),stars:parseInt(get(`tm-stars-${i}`))||5,text:get(`tm-text-${i}`)}));
+  saveAll();
+}
+
+// ===== FAQ =====
+function renderFaq(){
+  document.getElementById('faq-list').innerHTML = d.faq.map((f,i)=>`
+    <div class="item-card">
+      <div class="item-head" onclick="toggleItem(this)">
+        <div class="item-head-left"><span class="item-head-icon">❓</span><div class="item-head-title">${f.q.substring(0,50)}...</div></div>
+        <div class="item-actions"><button class="btn btn-red btn-sm" onclick="event.stopPropagation();delFaq(${i})">🗑</button><span class="item-chevron">▼</span></div>
+      </div>
+      <div class="item-body">
+        <div class="fg fg-1">
+          <div class="form-group"><label>Sual</label><input type="text" id="fq-q-${i}" value="${f.q}"></div>
+          <div class="form-group"><label>Cavab</label><textarea id="fq-a-${i}">${f.a}</textarea></div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+function addFaq(){ d.faq.push({id:Date.now(),q:'Yeni Sual?',a:'Cavab...'}); renderFaq(); updateDash(); }
+function delFaq(i){ d.faq.splice(i,1); renderFaq(); updateDash(); }
+function saveFaq(){
+  d.faq = d.faq.map((f,i)=>({...f,q:get(`fq-q-${i}`),a:get(`fq-a-${i}`)}));
+  saveAll();
+}
+
+// ===== STATS =====
+function renderStats(){
+  document.getElementById('stats-tbody').innerHTML = d.stats.map((s,i)=>`
+    <tr>
+      <td>${i+1}</td>
+      <td><input id="st-num-${i}" value="${s.num}"></td>
+      <td><input id="st-lbl-${i}" value="${s.label}"></td>
+    </tr>
+  `).join('');
+}
+function saveStats(){
+  d.stats = d.stats.map((s,i)=>({num:get(`st-num-${i}`),label:get(`st-lbl-${i}`)}));
+  saveAll();
+}
+
+// ===== NAV =====
+function renderNav(){
+  document.getElementById('nav-tbody').innerHTML = d.nav.map((n,i)=>`
+    <tr>
+      <td>${i+1}</td>
+      <td><input id="nv-lbl-${i}" value="${n.label}"></td>
+      <td><input id="nv-href-${i}" value="${n.href}"></td>
+      <td><button class="btn btn-red btn-sm" onclick="delNav(${i})">🗑</button></td>
+    </tr>
+  `).join('');
+}
+function addNav(){ d.nav.push({id:Date.now(),label:'Yeni',href:'#'}); renderNav(); }
+function delNav(i){ d.nav.splice(i,1); renderNav(); }
+function saveNav(){
+  d.nav = d.nav.map((n,i)=>({...n,label:get(`nv-lbl-${i}`),href:get(`nv-href-${i}`)}));
+  saveAll();
+}
+
+// ===== SAVE FUNCTIONS =====
+function saveSiteInfo(){
+  d.site = {name:get('si-name'),slogan:get('si-slogan'),phone:get('si-phone'),email:get('si-email'),telegram:get('si-telegram'),instagram:get('si-instagram'),workingHours:get('si-hours')};
+  saveAll();
+}
+function saveHero(){
+  d.hero = {...d.hero, badge:get('h-badge'), title:get('h-title1')+' '+get('h-title2'), subtitle:get('h-sub'), cta:get('h-cta1'), cta2:get('h-cta2')};
+  saveAll();
+}
+function saveFooter(){
+  d.footer = {copyright:get('ft-copy')};
+  saveAll();
+}
+
+function saveAll(){
+  const json = JSON.stringify(d,null,2);
+  const blob = new Blob([json],{type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href=url; a.download='data.json'; a.click();
+  URL.revokeObjectURL(url);
+  showNotif('✓ data.json endərildi!');
+  updateDash();
+}
+
+function toggleItem(head){
+  const card = head.parentElement;
+  card.classList.toggle('open');
+}
+
+function showNotif(msg,type='success'){
+  const el = document.getElementById('notif');
+  el.textContent=msg; el.className='notif '+(type==='error'?'error':'');
+  el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'),3500);
+}
+
+// Sidebar navigation
+document.querySelectorAll('.sb-item').forEach(item=>{
+  item.addEventListener('click',()=>{
+    const p = item.dataset.panel;
+    document.querySelectorAll('.sb-item').forEach(i=>i.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));
+    item.classList.add('active');
+    document.getElementById('panel-'+p)?.classList.add('active');
+    const titles = {dashboard:'// dashboard',siteinfo:'// sayt məlumatları',hero:'// hero bölməsi',products:'// məhsullar',categories:'// kateqoriyalar',howitworks:'// necə işləyir',testimonials:'// rəylər',faq:'// faq',stats:'// statistikalar',nav:'// naviqasiya',footer:'// footer'};
+    document.getElementById('page-title').textContent = titles[p]||'// '+p;
+  });
+});
+
+loadData();
+</script>
+</body>
+</html>
