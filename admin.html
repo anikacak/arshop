@@ -775,33 +775,24 @@ if (sessionStorage.getItem('based_admin_auth') === '1') {
   document.getElementById('pw-gate').style.display = 'none';
 }
 
-// ===== IMAGE UPLOAD — base64 data.json-a yazılır =====
+// ===== IMAGE UPLOAD =====
 function handleImgUpload(event, i) {
   const file = event.target.files[0];
   if (!file) return;
-  const img = new Image();
-  const objectUrl = URL.createObjectURL(file);
-  img.onload = function() {
-    const canvas = document.createElement('canvas');
-    const MAX = 500;
-    let w = img.width, h = img.height;
-    if (w > h) { if (w > MAX) { h = Math.round(h * MAX / w); w = MAX; } }
-    else        { if (h > MAX) { w = Math.round(w * MAX / h); h = MAX; } }
-    canvas.width = w; canvas.height = h;
-    canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-    const base64 = canvas.toDataURL('image/jpeg', 0.85);
-    URL.revokeObjectURL(objectUrl);
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const base64 = e.target.result;
     d.products[i].image = base64;
     const zone = document.getElementById('img-zone-' + i);
     zone.innerHTML = `<img src="${base64}" alt="preview" style="width:100%;height:110px;object-fit:cover;border-radius:6px;display:block;">
       <input type="file" accept="image/*" style="display:none" onchange="handleImgUpload(event,${i})">`;
     showNotif('✓ Şəkil yükləndi! "Hamısını Saxla" basın.');
   };
-  img.onerror = function() {
-    URL.revokeObjectURL(objectUrl);
-    showNotif('Şəkil oxunmadı, yenidən cəhd edin.', 'error');
+  reader.onerror = function() {
+    showNotif('Xəta baş verdi, yenidən cəhd edin.', 'error');
   };
-  img.src = objectUrl;
+  reader.readAsDataURL(file);
 }
 function clearImg(i) {
   d.products[i].image = '';
